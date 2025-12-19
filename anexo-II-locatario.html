@@ -632,7 +632,7 @@
         </div>
 
         <!-- Rodapé com versão -->
-        <div class="version-footer">v1.0.3</div>
+        <div class="version-footer">v1.1.0</div>
 
     </div>
 
@@ -773,30 +773,18 @@
         // Função para compartilhar PDF no WhatsApp
         async function compartilharWhatsApp() {
             try {
-                // Salvar estado original
-                const container = document.querySelector('.container');
-                const body = document.body;
                 const buttons = document.querySelector('.action-buttons');
+                const footer = document.querySelector('.version-footer');
                 
-                const originalContainerStyle = container.style.cssText;
-                const originalBodyStyle = body.style.cssText;
-                const originalDisplay = buttons.style.display;
+                const originalButtonsDisplay = buttons.style.display;
+                const originalFooterDisplay = footer.style.display;
                 
-                // Ocultar botões
+                // Ocultar botões e rodapé
                 buttons.style.display = 'none';
+                footer.style.display = 'none';
 
                 const nomeLocatario = document.getElementById('nomeLocatario').value || 'Locatario';
                 const fileName = `Anexo_II_${nomeLocatario.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
-
-                // Forçar largura desktop para PDF
-                body.style.cssText = 'width: 210mm; margin: 0; padding: 0; overflow: visible;';
-                container.style.cssText = originalContainerStyle + '; width: 100%; max-width: 100%; min-width: auto; padding: 6px !important;';
-
-                // Ajustar sections para evitar quebra de página
-                document.querySelectorAll('.section').forEach(section => {
-                    section.style.pageBreakInside = 'avoid';
-                    section.style.breakInside = 'avoid';
-                });
 
                 // Substituir inputs por texto temporariamente
                 const inputs = document.querySelectorAll('.container input');
@@ -840,35 +828,26 @@
                 });
 
                 // Aguardar renderização
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, 100));
 
-                // Configuração do PDF - largura fixa para A4
+                // Configuração minimalista do PDF
                 const opt = {
-                    margin: [4, 4, 4, 4],
+                    margin: 5,
                     filename: fileName,
-                    image: { type: 'jpeg', quality: 0.95 },
+                    image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
-                        scale: 1.6,
-                        useCORS: true,
-                        allowTaint: true,
-                        backgroundColor: '#ffffff',
-                        logging: false,
-                        width: 794,
-                        windowWidth: 794,
-                        x: 0,
-                        y: 0
+                        scale: 2,
+                        useCORS: true
                     },
                     jsPDF: { 
                         unit: 'mm', 
                         format: 'a4', 
-                        orientation: 'portrait',
-                        compress: true
-                    },
-                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                        orientation: 'portrait'
+                    }
                 };
 
                 // Gerar PDF
-                const pdfBlob = await html2pdf().set(opt).from(container).output('blob');
+                const pdfBlob = await html2pdf().set(opt).from(document.querySelector('.container')).output('blob');
                 
                 // Restaurar inputs
                 document.querySelectorAll('.pdf-text-replacement').forEach(span => {
@@ -890,10 +869,9 @@
                     }
                 });
                 
-                // Restaurar estilos originais
-                container.style.cssText = originalContainerStyle;
-                body.style.cssText = originalBodyStyle;
-                buttons.style.display = originalDisplay;
+                // Restaurar visibilidade
+                buttons.style.display = originalButtonsDisplay;
+                footer.style.display = originalFooterDisplay;
 
                 // Criar arquivo para compartilhar
                 const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
