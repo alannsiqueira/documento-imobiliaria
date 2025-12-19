@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anexo II - Locatário</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -239,6 +240,12 @@
 
         /* Estilos para impressão/PDF */
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
             body {
                 background-color: white;
                 padding: 0;
@@ -654,44 +661,98 @@
             window.print();
         }
 
-        // Função para compartilhar no WhatsApp
+        // Função para compartilhar PDF no WhatsApp
         async function compartilharWhatsApp() {
-            const nomeLocatario = document.getElementById('nomeLocatario').value || 'Locatário';
-            
-            // Verificar se o navegador suporta Web Share API
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: 'Anexo II - Locatário',
-                        text: `Formulário de cadastro do locatário ${nomeLocatario}.\n\nPreencha e gere o PDF para enviar.`,
-                        url: window.location.href
-                    });
-                    console.log('Compartilhado com sucesso!');
-                } catch (err) {
-                    console.log('Erro ao compartilhar:', err);
-                    compartilharWhatsAppFallback();
-                }
-            } else {
-                // Fallback: abrir WhatsApp Web
-                compartilharWhatsAppFallback();
-            }
-        }
+            try {
+                // Ocultar botões antes de gerar PDF
+                const buttons = document.querySelector('.action-buttons');
+                buttons.style.display = 'none';
 
-        function compartilharWhatsAppFallback() {
-            const mensagem = encodeURIComponent(
-                '📋 *Formulário Anexo II - Locatário*\n\n' +
-                'Por favor, preencha o formulário através do link:\n' +
-                window.location.href + '\n\n' +
-                'Após preencher, clique em "Gerar PDF" e envie o documento.'
-            );
-            
-            // Detectar se é mobile ou desktop
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const whatsappUrl = isMobile 
-                ? `whatsapp://send?text=${mensagem}`
-                : `https://web.whatsapp.com/send?text=${mensagem}`;
-            
-            window.open(whatsappUrl, '_blank');
+                const nomeLocatario = document.getElementById('nomeLocatario').value || 'Locatario';
+                const fileName = `Anexo_II_${nomeLocatario.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+
+                // Clonar o container
+                const originalElement = document.querySelector('.container');
+                const clonedElement = originalElement.cloneNode(true);
+                
+                // Substituir todos os inputs pelos valores como texto
+                const inputs = clonedElement.querySelectorAll('input');
+                inputs.forEach(input => {
+                    const span = document.createElement('span');
+                    span.textContent = input.value || '';
+                    span.style.cssText = window.getComputedStyle(input).cssText;
+                    span.style.border = 'none';
+                    span.style.borderBottom = '1px solid #666';
+                    span.style.backgroundColor = 'transparent';
+                    span.style.display = 'inline-block';
+                    span.style.minHeight = '16px';
+                    input.parentNode.replaceChild(span, input);
+                });
+                
+                // Remover botões do clone
+                const clonedButtons = clonedElement.querySelector('.action-buttons');
+                if (clonedButtons) clonedButtons.remove();
+                
+                // Adicionar clone temporário ao DOM (necessário para html2canvas)
+                clonedElement.style.position = 'absolute';
+                clonedElement.style.left = '-9999px';
+                document.body.appendChild(clonedElement);
+
+                // Configuração do PDF
+                const opt = {
+                    margin: 8,
+                    filename: fileName,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { 
+                        scale: 2, 
+                        useCORS: true,
+                        letterRendering: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        scrollY: 0,
+                        scrollX: 0,
+                        windowWidth: clonedElement.scrollWidth,
+                        windowHeight: clonedElement.scrollHeight
+                    },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                // Gerar PDF do clone
+                const pdfBlob = await html2pdf().set(opt).from(clonedElement).output('blob');
+                
+                // Remover clone do DOM
+                document.body.removeChild(clonedElement);
+                
+                // Restaurar botões
+                buttons.style.display = 'flex';
+
+                // Criar arquivo para compartilhar
+                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+                // Tentar compartilhar via Web Share API
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Anexo II - Locatário',
+                        text: 'Formulário de cadastro do locatário'
+                    });
+                    console.log('PDF compartilhado com sucesso!');
+                } else {
+                    // Fallback: baixar o PDF
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(pdfBlob);
+                    link.download = fileName;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                    alert('✅ PDF baixado! Agora você pode enviá-lo pelo WhatsApp.');
+                }
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                // Restaurar botões em caso de erro
+                document.querySelector('.action-buttons').style.display = 'flex';
+                alert('❌ Erro ao gerar PDF. Tente usar o botão "Gerar PDF" para imprimir.');
+            }
         }
 
         // Função para limpar formulário
