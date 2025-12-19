@@ -773,7 +773,13 @@
 
                 // Forçar largura desktop para PDF
                 body.style.cssText = 'width: 210mm; margin: 0; padding: 0; overflow: visible;';
-                container.style.cssText = originalContainerStyle + '; width: 100%; max-width: 100%; min-width: auto;';
+                container.style.cssText = originalContainerStyle + '; width: 100%; max-width: 100%; min-width: auto; padding: 5px !important;';
+
+                // Ajustar sections para evitar quebra de página
+                document.querySelectorAll('.section').forEach(section => {
+                    section.style.pageBreakInside = 'avoid';
+                    section.style.breakInside = 'avoid';
+                });
 
                 // Substituir inputs por texto temporariamente
                 const inputs = document.querySelectorAll('.container input');
@@ -821,11 +827,11 @@
 
                 // Configuração do PDF - largura fixa para A4
                 const opt = {
-                    margin: [5, 5, 5, 5],
+                    margin: [2, 2, 2, 2],
                     filename: fileName,
                     image: { type: 'jpeg', quality: 0.95 },
                     html2canvas: { 
-                        scale: 2,
+                        scale: 1.5,
                         useCORS: true,
                         allowTaint: true,
                         backgroundColor: '#ffffff',
