@@ -169,6 +169,14 @@
             color: #333;
         }
 
+        .version-footer {
+            text-align: center;
+            font-size: 9px;
+            color: #666;
+            padding: 5px;
+            margin-top: 5px;
+        }
+
         /* Estilos para Mobile */
         @media screen and (max-width: 768px) {
             body {
@@ -264,17 +272,25 @@
             body {
                 background-color: white;
                 padding: 0;
+                margin: 0;
             }
             
             .action-buttons {
-                display: none;
+                display: none !important;
+                visibility: hidden !important;
+            }
+            
+            .version-footer {
+                display: none !important;
             }
             
             .container {
                 box-shadow: none;
                 max-width: 100%;
+                width: 100%;
                 page-break-inside: avoid;
-                padding: 5px;
+                padding: 8px;
+                margin: 0;
             }
             
             .section {
@@ -606,6 +622,9 @@
             </div>
         </div>
 
+        <!-- Rodapé com versão -->
+        <div class="version-footer">v1.0.0</div>
+
     </div>
 
     <script>
@@ -659,17 +678,14 @@
         // Função para gerar PDF
         async function gerarPDF() {
             try {
-                // Ocultar botões
-                const buttons = document.querySelector('.action-buttons');
-                buttons.style.display = 'none';
-
                 // Substituir inputs por texto temporariamente
                 const inputs = document.querySelectorAll('.container input');
                 const originalInputs = [];
                 
                 inputs.forEach(input => {
                     const span = document.createElement('span');
-                    span.textContent = input.value || '';
+                    // Não capturar placeholder, apenas value
+                    span.textContent = input.value || ' ';
                     span.className = 'pdf-text-replacement';
                     span.style.cssText = `
                         font-size: 11px;
@@ -680,6 +696,7 @@
                         padding: 2px 4px;
                         flex: 0.8;
                         max-width: 120px;
+                        white-space: pre;
                     `;
                     originalInputs.push({ input, parent: input.parentNode, nextSibling: input.nextSibling });
                     input.parentNode.replaceChild(span, input);
@@ -688,7 +705,7 @@
                 // Aguardar renderização
                 await new Promise(resolve => setTimeout(resolve, 100));
 
-                // Imprimir
+                // Imprimir (CSS @media print oculta os botões automaticamente)
                 window.print();
 
                 // Aguardar o diálogo de impressão
@@ -704,9 +721,6 @@
                     }
                     span.remove();
                 });
-
-                // Restaurar botões
-                buttons.style.display = 'flex';
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
                 location.reload();
@@ -741,7 +755,8 @@
                 
                 inputs.forEach(input => {
                     const span = document.createElement('span');
-                    span.textContent = input.value || '';
+                    // Não capturar placeholder, apenas value
+                    span.textContent = input.value || ' ';
                     span.className = 'pdf-text-replacement';
                     span.style.cssText = `
                         font-size: 11px;
@@ -752,6 +767,7 @@
                         padding: 2px 4px;
                         flex: 0.8;
                         max-width: 120px;
+                        white-space: pre;
                     `;
                     originalInputs.push({ input, parent: input.parentNode, nextSibling: input.nextSibling });
                     input.parentNode.replaceChild(span, input);
@@ -762,7 +778,7 @@
 
                 // Configuração do PDF - largura fixa para A4
                 const opt = {
-                    margin: 8,
+                    margin: [8, 8, 8, 8],
                     filename: fileName,
                     image: { type: 'jpeg', quality: 0.95 },
                     html2canvas: { 
@@ -771,10 +787,18 @@
                         allowTaint: true,
                         backgroundColor: '#ffffff',
                         logging: false,
-                        width: 794,  // ~210mm em pixels (96 DPI)
-                        windowWidth: 794
+                        width: 794,
+                        windowWidth: 794,
+                        x: 0,
+                        y: 0
                     },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    jsPDF: { 
+                        unit: 'mm', 
+                        format: 'a4', 
+                        orientation: 'portrait',
+                        compress: true
+                    },
+                    pagebreak: { mode: 'avoid-all' }
                 };
 
                 // Gerar PDF
