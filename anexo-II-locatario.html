@@ -632,7 +632,7 @@
         </div>
 
         <!-- Rodapé com versão -->
-        <div class="version-footer">v1.2.0</div>
+        <div class="version-footer">v1.2.1</div>
 
     </div>
 
@@ -776,32 +776,41 @@
                 const nomeLocatario = document.getElementById('nomeLocatario').value || 'Locatario';
                 const fileName = `Anexo_II_${nomeLocatario.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
 
-                // Substituir inputs por texto temporariamente (MESMA LÓGICA DE gerarPDF)
-                const inputs = document.querySelectorAll('.container input');
-                const originalInputs = [];
+                // Criar clone do container para aplicar estilos de print
+                const originalContainer = document.querySelector('.container');
+                const cloneContainer = originalContainer.cloneNode(true);
                 
-                inputs.forEach(input => {
-                    // Radio buttons e checkboxes: ocultar se não estiverem selecionados
+                // Aplicar estilos de print no clone
+                cloneContainer.style.cssText = 'box-shadow: none; max-width: 100%; width: 210mm; page-break-inside: avoid; padding: 8px; margin: 0; background-color: #2c5468; border-radius: 0;';
+                
+                // Remover botões e footer do clone
+                cloneContainer.querySelector('.action-buttons')?.remove();
+                cloneContainer.querySelector('.version-footer')?.remove();
+                
+                // Aplicar estilos de print nas sections do clone
+                cloneContainer.querySelectorAll('.section').forEach(section => {
+                    section.style.cssText += '; page-break-inside: avoid; padding: 6px; margin-bottom: 6px;';
+                });
+                
+                // Substituir inputs por spans no clone (mesma lógica de gerarPDF)
+                cloneContainer.querySelectorAll('input').forEach(input => {
                     if (input.type === 'radio' || input.type === 'checkbox') {
                         if (!input.checked) {
                             input.style.display = 'none';
-                            originalInputs.push({ input, type: 'hide' });
                         }
-                        return; // Manter radio/checkbox visível se estiver marcado
+                        return;
                     }
                     
-                    // Inputs de texto: substituir por span com valor
                     const span = document.createElement('span');
                     const textValue = input.value.trim();
                     const placeholderValue = input.getAttribute('placeholder') || '';
                     
                     if (textValue === '' || textValue === placeholderValue) {
-                        span.textContent = ' '; // Espaço vazio se não há valor real
+                        span.textContent = ' ';
                     } else {
                         span.textContent = textValue;
                     }
                     
-                    span.className = 'pdf-text-replacement';
                     span.style.cssText = `
                         font-size: 11px;
                         color: #000;
@@ -813,21 +822,27 @@
                         max-width: 120px;
                         white-space: pre;
                     `;
-                    originalInputs.push({ input, parent: input.parentNode, nextSibling: input.nextSibling, type: 'replace' });
                     input.parentNode.replaceChild(span, input);
                 });
+                
+                // Adicionar clone ao body temporariamente (invisível)
+                cloneContainer.style.position = 'absolute';
+                cloneContainer.style.left = '-9999px';
+                cloneContainer.style.top = '0';
+                document.body.appendChild(cloneContainer);
 
-                // Aguardar renderização
                 await new Promise(resolve => setTimeout(resolve, 100));
 
-                // Usar html2pdf.js em vez de window.print()
+                // Gerar PDF do clone
                 const opt = {
                     margin: 8,
                     filename: fileName,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
                         scale: 2,
-                        useCORS: true
+                        useCORS: true,
+                        width: 794,
+                        windowWidth: 794
                     },
                     jsPDF: { 
                         unit: 'mm', 
@@ -836,32 +851,14 @@
                     }
                 };
 
-                const pdfBlob = await html2pdf().set(opt).from(document.querySelector('.container')).output('blob');
-
-                // Restaurar inputs (MESMA LÓGICA DE gerarPDF)
-                document.querySelectorAll('.pdf-text-replacement').forEach(span => {
-                    const item = originalInputs.find(oi => oi.type === 'replace' && oi.parent === span.parentNode);
-                    if (item) {
-                        if (item.nextSibling) {
-                            item.parent.insertBefore(item.input, item.nextSibling);
-                        } else {
-                            item.parent.appendChild(item.input);
-                        }
-                        span.remove();
-                    }
-                });
+                const pdfBlob = await html2pdf().set(opt).from(cloneContainer).output('blob');
                 
-                // Restaurar visibilidade dos radio/checkbox
-                originalInputs.forEach(item => {
-                    if (item.type === 'hide') {
-                        item.input.style.display = '';
-                    }
-                });
+                // Remover clone
+                document.body.removeChild(cloneContainer);
 
-                // Criar arquivo para compartilhar
+                // Compartilhar
                 const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
-                // Tentar compartilhar via Web Share API
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         files: [file],
@@ -870,7 +867,6 @@
                     });
                     console.log('PDF compartilhado com sucesso!');
                 } else {
-                    // Fallback: baixar o PDF
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(pdfBlob);
                     link.download = fileName;
@@ -880,7 +876,6 @@
                 }
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
-                location.reload();
                 alert('❌ Erro ao gerar PDF: ' + error.message);
             }
         }
