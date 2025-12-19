@@ -632,7 +632,7 @@
         </div>
 
         <!-- Rodapé com versão -->
-        <div class="version-footer">v1.2.1</div>
+        <div class="version-footer">v1.2.2</div>
 
     </div>
 
@@ -825,10 +825,13 @@
                     input.parentNode.replaceChild(span, input);
                 });
                 
-                // Adicionar clone ao body temporariamente (invisível)
-                cloneContainer.style.position = 'absolute';
-                cloneContainer.style.left = '-9999px';
+                // Adicionar clone ao body temporariamente
+                cloneContainer.style.position = 'fixed';
+                cloneContainer.style.left = '0';
                 cloneContainer.style.top = '0';
+                cloneContainer.style.zIndex = '-1';
+                cloneContainer.style.opacity = '0';
+                cloneContainer.style.pointerEvents = 'none';
                 document.body.appendChild(cloneContainer);
 
                 await new Promise(resolve => setTimeout(resolve, 100));
