@@ -69,7 +69,7 @@
         .section {
             background-color: #fdb927;
             padding: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             border-radius: 6px;
             page-break-inside: avoid;
             -webkit-print-color-adjust: exact !important;
@@ -683,9 +683,26 @@
                 const originalInputs = [];
                 
                 inputs.forEach(input => {
+                    // Radio buttons e checkboxes: ocultar se não estiverem selecionados
+                    if (input.type === 'radio' || input.type === 'checkbox') {
+                        if (!input.checked) {
+                            input.style.display = 'none';
+                            originalInputs.push({ input, type: 'hide' });
+                        }
+                        return; // Manter radio/checkbox visível se estiver marcado
+                    }
+                    
+                    // Inputs de texto: substituir por span com valor
                     const span = document.createElement('span');
-                    // Não capturar placeholder, apenas value
-                    span.textContent = input.value || ' ';
+                    const textValue = input.value.trim();
+                    const placeholderValue = input.getAttribute('placeholder') || '';
+                    
+                    if (textValue === '' || textValue === placeholderValue) {
+                        span.textContent = ' '; // Espaço vazio se não há valor real
+                    } else {
+                        span.textContent = textValue;
+                    }
+                    
                     span.className = 'pdf-text-replacement';
                     span.style.cssText = `
                         font-size: 11px;
@@ -698,7 +715,7 @@
                         max-width: 120px;
                         white-space: pre;
                     `;
-                    originalInputs.push({ input, parent: input.parentNode, nextSibling: input.nextSibling });
+                    originalInputs.push({ input, parent: input.parentNode, nextSibling: input.nextSibling, type: 'replace' });
                     input.parentNode.replaceChild(span, input);
                 });
 
@@ -712,14 +729,23 @@
                 await new Promise(resolve => setTimeout(resolve, 500));
 
                 // Restaurar inputs
-                document.querySelectorAll('.pdf-text-replacement').forEach((span, index) => {
-                    const { input, parent, nextSibling } = originalInputs[index];
-                    if (nextSibling) {
-                        parent.insertBefore(input, nextSibling);
-                    } else {
-                        parent.appendChild(input);
+                document.querySelectorAll('.pdf-text-replacement').forEach(span => {
+                    const item = originalInputs.find(oi => oi.type === 'replace' && oi.parent === span.parentNode);
+                    if (item) {
+                        if (item.nextSibling) {
+                            item.parent.insertBefore(item.input, item.nextSibling);
+                        } else {
+                            item.parent.appendChild(item.input);
+                        }
+                        span.remove();
                     }
-                    span.remove();
+                });
+                
+                // Restaurar visibilidade dos radio/checkbox
+                originalInputs.forEach(item => {
+                    if (item.type === 'hide') {
+                        item.input.style.display = '';
+                    }
                 });
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
@@ -754,9 +780,26 @@
                 const originalInputs = [];
                 
                 inputs.forEach(input => {
+                    // Radio buttons e checkboxes: ocultar se não estiverem selecionados
+                    if (input.type === 'radio' || input.type === 'checkbox') {
+                        if (!input.checked) {
+                            input.style.display = 'none';
+                            originalInputs.push({ input, type: 'hide' });
+                        }
+                        return; // Manter radio/checkbox visível se estiver marcado
+                    }
+                    
+                    // Inputs de texto: substituir por span com valor
                     const span = document.createElement('span');
-                    // Não capturar placeholder, apenas value
-                    span.textContent = input.value || ' ';
+                    const textValue = input.value.trim();
+                    const placeholderValue = input.getAttribute('placeholder') || '';
+                    
+                    if (textValue === '' || textValue === placeholderValue) {
+                        span.textContent = ' '; // Espaço vazio se não há valor real
+                    } else {
+                        span.textContent = textValue;
+                    }
+                    
                     span.className = 'pdf-text-replacement';
                     span.style.cssText = `
                         font-size: 11px;
@@ -769,7 +812,7 @@
                         max-width: 120px;
                         white-space: pre;
                     `;
-                    originalInputs.push({ input, parent: input.parentNode, nextSibling: input.nextSibling });
+                    originalInputs.push({ input, parent: input.parentNode, nextSibling: input.nextSibling, type: 'replace' });
                     input.parentNode.replaceChild(span, input);
                 });
 
@@ -778,7 +821,7 @@
 
                 // Configuração do PDF - largura fixa para A4
                 const opt = {
-                    margin: [8, 8, 8, 8],
+                    margin: [5, 5, 5, 5],
                     filename: fileName,
                     image: { type: 'jpeg', quality: 0.95 },
                     html2canvas: { 
@@ -786,7 +829,7 @@
                         useCORS: true,
                         allowTaint: true,
                         backgroundColor: '#ffffff',
-                        logging: false,
+                        logging: true,
                         width: 794,
                         windowWidth: 794,
                         x: 0,
@@ -798,21 +841,30 @@
                         orientation: 'portrait',
                         compress: true
                     },
-                    pagebreak: { mode: 'avoid-all' }
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
                 };
 
                 // Gerar PDF
                 const pdfBlob = await html2pdf().set(opt).from(container).output('blob');
                 
                 // Restaurar inputs
-                document.querySelectorAll('.pdf-text-replacement').forEach((span, index) => {
-                    const { input, parent, nextSibling } = originalInputs[index];
-                    if (nextSibling) {
-                        parent.insertBefore(input, nextSibling);
-                    } else {
-                        parent.appendChild(input);
+                document.querySelectorAll('.pdf-text-replacement').forEach(span => {
+                    const item = originalInputs.find(oi => oi.type === 'replace' && oi.parent === span.parentNode);
+                    if (item) {
+                        if (item.nextSibling) {
+                            item.parent.insertBefore(item.input, item.nextSibling);
+                        } else {
+                            item.parent.appendChild(item.input);
+                        }
+                        span.remove();
                     }
-                    span.remove();
+                });
+                
+                // Restaurar visibilidade dos radio/checkbox
+                originalInputs.forEach(item => {
+                    if (item.type === 'hide') {
+                        item.input.style.display = '';
+                    }
                 });
                 
                 // Restaurar estilos originais
