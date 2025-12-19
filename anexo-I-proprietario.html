@@ -623,7 +623,7 @@
         </div>
 
         <!-- Rodapé com versão -->
-        <div class="version-footer">v1.1.2</div>
+        <div class="version-footer">v1.2.0</div>
 
     </div>
 
@@ -756,33 +756,10 @@
         // Função para compartilhar PDF no WhatsApp
         async function compartilharWhatsApp() {
             try {
-                const container = document.querySelector('.container');
-                const body = document.body;
-                const buttons = document.querySelector('.action-buttons');
-                const footer = document.querySelector('.version-footer');
-                const sections = document.querySelectorAll('.section');
-                
-                const originalBodyStyle = body.style.cssText;
-                const originalContainerStyle = container.style.cssText;
-                const originalButtonsDisplay = buttons.style.display;
-                const originalFooterDisplay = footer.style.display;
-                const originalSectionStyles = Array.from(sections).map(s => s.style.cssText);
-                
-                // Aplicar estilos do @media print inline
-                body.style.cssText = 'background-color: white; padding: 0; margin: 0;';
-                container.style.cssText = 'box-shadow: none; max-width: 100%; width: 100%; page-break-inside: avoid; padding: 8px; margin: 0; background-color: #2c5468; border-radius: 8px;';
-                buttons.style.display = 'none';
-                footer.style.display = 'none';
-                
-                // Aplicar estilos de print nas sections
-                sections.forEach(section => {
-                    section.style.cssText += '; page-break-inside: avoid; padding: 6px; margin-bottom: 6px;';
-                });
-
                 const nomeProprietario = document.getElementById('nome').value || 'Proprietario';
                 const fileName = `Anexo_I_${nomeProprietario.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
 
-                // Substituir inputs por texto temporariamente
+                // Substituir inputs por texto temporariamente (MESMA LÓGICA DE gerarPDF)
                 const inputs = document.querySelectorAll('.container input');
                 const originalInputs = [];
                 
@@ -826,9 +803,9 @@
                 // Aguardar renderização
                 await new Promise(resolve => setTimeout(resolve, 100));
 
-                // Configuração minimalista do PDF
+                // Usar html2pdf.js em vez de window.print()
                 const opt = {
-                    margin: 5,
+                    margin: 8,
                     filename: fileName,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
@@ -842,10 +819,9 @@
                     }
                 };
 
-                // Gerar PDF
                 const pdfBlob = await html2pdf().set(opt).from(document.querySelector('.container')).output('blob');
-                
-                // Restaurar inputs
+
+                // Restaurar inputs (MESMA LÓGICA DE gerarPDF)
                 document.querySelectorAll('.pdf-text-replacement').forEach(span => {
                     const item = originalInputs.find(oi => oi.type === 'replace' && oi.parent === span.parentNode);
                     if (item) {
@@ -863,15 +839,6 @@
                     if (item.type === 'hide') {
                         item.input.style.display = '';
                     }
-                });
-                
-                // Restaurar estilos
-                body.style.cssText = originalBodyStyle;
-                container.style.cssText = originalContainerStyle;
-                buttons.style.display = originalButtonsDisplay;
-                footer.style.display = originalFooterDisplay;
-                sections.forEach((section, i) => {
-                    section.style.cssText = originalSectionStyles[i];
                 });
 
                 // Criar arquivo para compartilhar
@@ -896,7 +863,6 @@
                 }
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
-                // Restaurar em caso de erro
                 location.reload();
                 alert('❌ Erro ao gerar PDF: ' + error.message);
             }
