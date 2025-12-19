@@ -666,20 +666,11 @@
         });
 
         // Função para gerar PDF
-        function gerarPDF() {
-            window.print();
-        }
-
-        // Função para compartilhar PDF no WhatsApp
-        async function compartilharWhatsApp() {
+        async function gerarPDF() {
             try {
                 // Ocultar botões
                 const buttons = document.querySelector('.action-buttons');
-                const originalDisplay = buttons.style.display;
                 buttons.style.display = 'none';
-
-                const nomeLocatario = document.getElementById('nomeLocatario').value || 'Locatario';
-                const fileName = `Anexo_II_${nomeLocatario.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
 
                 // Substituir inputs por texto temporariamente
                 const inputs = document.querySelectorAll('.container input');
@@ -706,8 +697,79 @@
                 // Aguardar renderização
                 await new Promise(resolve => setTimeout(resolve, 100));
 
-                // Configuração do PDF
-                const element = document.querySelector('.container');
+                // Imprimir
+                window.print();
+
+                // Aguardar o diálogo de impressão
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Restaurar inputs
+                document.querySelectorAll('.pdf-text-replacement').forEach((span, index) => {
+                    const { input, parent, nextSibling } = originalInputs[index];
+                    if (nextSibling) {
+                        parent.insertBefore(input, nextSibling);
+                    } else {
+                        parent.appendChild(input);
+                    }
+                    span.remove();
+                });
+
+                // Restaurar botões
+                buttons.style.display = 'flex';
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                location.reload();
+            }
+        }
+
+        // Função para compartilhar PDF no WhatsApp
+        async function compartilharWhatsApp() {
+            try {
+                // Salvar estado original
+                const container = document.querySelector('.container');
+                const body = document.body;
+                const buttons = document.querySelector('.action-buttons');
+                
+                const originalContainerStyle = container.style.cssText;
+                const originalBodyStyle = body.style.cssText;
+                const originalDisplay = buttons.style.display;
+                
+                // Ocultar botões
+                buttons.style.display = 'none';
+
+                const nomeLocatario = document.getElementById('nomeLocatario').value || 'Locatario';
+                const fileName = `Anexo_II_${nomeLocatario.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+
+                // Forçar largura desktop para PDF
+                body.style.cssText = 'width: 210mm; margin: 0; padding: 0; overflow: visible;';
+                container.style.cssText = originalContainerStyle + '; width: 100%; max-width: 100%; min-width: auto;';
+
+                // Substituir inputs por texto temporariamente
+                const inputs = document.querySelectorAll('.container input');
+                const originalInputs = [];
+                
+                inputs.forEach(input => {
+                    const span = document.createElement('span');
+                    span.textContent = input.value || '';
+                    span.className = 'pdf-text-replacement';
+                    span.style.cssText = `
+                        font-size: 11px;
+                        color: #000;
+                        border-bottom: 1px solid #666;
+                        display: inline-block;
+                        min-width: 25px;
+                        padding: 2px 4px;
+                        flex: 0.8;
+                        max-width: 120px;
+                    `;
+                    originalInputs.push({ input, parent: input.parentNode, nextSibling: input.nextSibling });
+                    input.parentNode.replaceChild(span, input);
+                });
+
+                // Aguardar renderização
+                await new Promise(resolve => setTimeout(resolve, 200));
+
+                // Configuração do PDF - largura fixa para A4
                 const opt = {
                     margin: 8,
                     filename: fileName,
@@ -717,15 +779,15 @@
                         useCORS: true,
                         allowTaint: true,
                         backgroundColor: '#ffffff',
-                        logging: true,
-                        width: element.offsetWidth,
-                        height: element.offsetHeight
+                        logging: false,
+                        width: 794,  // ~210mm em pixels (96 DPI)
+                        windowWidth: 794
                     },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
                 // Gerar PDF
-                const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
+                const pdfBlob = await html2pdf().set(opt).from(container).output('blob');
                 
                 // Restaurar inputs
                 document.querySelectorAll('.pdf-text-replacement').forEach((span, index) => {
@@ -738,7 +800,9 @@
                     span.remove();
                 });
                 
-                // Restaurar botões
+                // Restaurar estilos originais
+                container.style.cssText = originalContainerStyle;
+                body.style.cssText = originalBodyStyle;
                 buttons.style.display = originalDisplay;
 
                 // Criar arquivo para compartilhar
@@ -763,8 +827,8 @@
                 }
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
-                // Restaurar botões em caso de erro
-                document.querySelector('.action-buttons').style.display = 'flex';
+                // Restaurar em caso de erro
+                location.reload();
                 alert('❌ Erro ao gerar PDF: ' + error.message);
             }
         }
