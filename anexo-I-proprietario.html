@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anexo I - Proprietário</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background-color: #2c5468;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .header {
+            background-color: #2c5468;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background-color: #fdb927;
+            color: #2c5468;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #e5a520;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .section {
+            background-color: #fdb927;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            background-color: #fdb927;
+            color: #2c5468;
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+            margin-bottom: 6px;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 4px 6px;
+            border-radius: 3px;
+            gap: 4px;
+        }
+
+        .form-group.small {
+            flex: 0.25;
+        }
+
+        .form-group.medium {
+            flex: 0.4;
+        }
+
+        .form-group.large {
+            flex: 1;
+        }
+
+        .form-label {
+            font-size: 10px;
+            color: #2c5468;
+            font-weight: normal;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .form-input {
+            background-color: transparent;
+            padding: 2px 3px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 11px;
+            color: #2c5468;
+            flex: 0.8;
+            min-width: 25px;
+            max-width: 120px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2c5468;
+            box-shadow: 0 0 0 2px rgba(44, 84, 104, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 10px;
+            color: #2c5468;
+        }
+
+        .conditions-box {
+            background-color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        /* Estilos para Mobile */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                padding: 8px;
+            }
+
+            .header {
+                font-size: 16px;
+                padding: 8px;
+                letter-spacing: 2px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .section {
+                padding: 10px;
+            }
+
+            .section-title {
+                font-size: 14px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 10px;
+                gap: 5px;
+            }
+
+            .form-group.small,
+            .form-group.medium,
+            .form-group.large {
+                flex: 1;
+            }
+
+            .form-label {
+                font-size: 12px;
+                font-weight: bold;
+                white-space: normal;
+            }
+
+            .form-input {
+                font-size: 16px;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                max-width: none;
+                min-height: 40px;
+            }
+
+            .radio-group {
+                flex-direction: row;
+                justify-content: flex-start;
+                padding: 10px 0;
+            }
+
+            .radio-option {
+                font-size: 14px;
+                gap: 8px;
+            }
+
+            .radio-option input[type="radio"] {
+                width: 20px;
+                height: 20px;
+            }
+
+            .conditions-box {
+                font-size: 12px;
+                line-height: 1.6;
+            }
+        }
+
+        /* Estilos para impressão/PDF */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            
+            .action-buttons {
+                display: none;
+            }
+            
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+                page-break-inside: avoid;
+                padding: 5px;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+                padding: 6px;
+                margin-bottom: 6px;
+            }
+            
+            .form-input {
+                border-bottom: 1px solid #999;
+            }
+
+            @page {
+                size: A4;
+                margin: 8mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">ANEXO I - PROPRIETÁRIO</div>
+
+        <!-- Botões de Ação -->
+        <div class="action-buttons">
+            <button class="btn" onclick="gerarPDF()">📄 Gerar PDF</button>
+            <button class="btn" onclick="compartilharWhatsApp()">📱 Compartilhar</button>
+            <button class="btn" onclick="limparFormulario()">🗑️ Limpar Formulário</button>
+        </div>
+
+        <!-- CARACTERÍSTICAS DA LOCAÇÃO -->
+        <div class="section">
+            <div class="section-title">CARACTERÍSTICAS DA LOCAÇÃO</div>
+            
+            <div class="form-row">
+                <div class="form-group medium">
+                    <label class="form-label">Valor do Aluguel: R$</label>
+                    <input type="text" class="form-input" id="valorAluguel" placeholder="0,00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Taxa de Adm mensal %:</label>
+                    <input type="text" class="form-input" id="taxaAdm" placeholder="0,00">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group large">
+                    <label class="form-label">Taxa de locação %:</label>
+                    <input type="text" class="form-input" id="taxaLocacao" placeholder="0,00">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group large">
+                    <label class="form-label">Tipo do imóvel:</label>
+                    <input type="text" class="form-input" id="tipoImovel" placeholder="Ex: Casa, Apartamento, Sala Comercial">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">CEP:</label>
+                    <input type="text" class="form-input" id="cep" placeholder="00000-000" maxlength="9">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group large">
+                    <label class="form-label">Endereço:</label>
+                    <input type="text" class="form-input" id="endereco" placeholder="Rua, Avenida...">
+                </div>
+                <div class="form-group small">
+                    <label class="form-label">Nº:</label>
+                    <input type="text" class="form-input" id="numero" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Complemento:</label>
+                    <input type="text" class="form-input" id="complemento" placeholder="Apto, Bloco...">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group medium">
+                    <label class="form-label">Bairro:</label>
+                    <input type="text" class="form-input" id="bairro" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Cidade:</label>
+                    <input type="text" class="form-input" id="cidade" placeholder="">
+                </div>
+                <div class="form-group small">
+                    <label class="form-label">Estado:</label>
+                    <input type="text" class="form-input" id="estado" placeholder="UF" maxlength="2">
+                </div>
+            </div>
+        </div>
+
+        <!-- PROPRIETÁRIO -->
+        <div class="section">
+            <div class="section-title">PROPRIETÁRIO</div>
+            
+            <div class="form-row">
+                <div class="form-group large">
+                    <label class="form-label">Nome:</label>
+                    <input type="text" class="form-input" id="nome" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">CPF:</label>
+                    <input type="text" class="form-input" id="cpf" placeholder="000.000.000-00" maxlength="14">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group large">
+                    <label class="form-label">Forma de pagamento:</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="formaPagamento" value="transferencia"> Transferência
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="formaPagamento" value="pix"> Pix
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Chave PIX:</label>
+                    <input type="text" class="form-input" id="chavePix" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group medium">
+                    <label class="form-label">Banco:</label>
+                    <input type="text" class="form-input" id="banco" placeholder="">
+                </div>
+                <div class="form-group small">
+                    <label class="form-label">Agência:</label>
+                    <input type="text" class="form-input" id="agencia" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Conta:</label>
+                    <input type="text" class="form-input" id="conta" placeholder="">
+                </div>
+                <div class="form-group small">
+                    <label class="form-label">Operação:</label>
+                    <input type="text" class="form-input" id="operacao" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group medium">
+                    <label class="form-label">Titular:</label>
+                    <input type="text" class="form-input" id="titular" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">CPF:</label>
+                    <input type="text" class="form-input" id="cpfTitular" placeholder="000.000.000-00" maxlength="14">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">E-mail:</label>
+                    <input type="email" class="form-input" id="email" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group medium">
+                    <label class="form-label">Telefone fixo:</label>
+                    <input type="text" class="form-input" id="telefoneFixo" placeholder="(00) 0000-0000" maxlength="14">
+                </div>
+                <div class="form-group large">
+                    <label class="form-label">Telefone Celular (DDD + Número):</label>
+                    <input type="text" class="form-input" id="telefoneCelular" placeholder="(00) 00000-0000" maxlength="15">
+                </div>
+            </div>
+
+            <!-- FILIAÇÃO -->
+            <div class="section-title" style="margin-top: 10px;">FILIAÇÃO</div>
+
+            <div class="form-row">
+                <div class="form-group large">
+                    <label class="form-label">Nome da mãe:</label>
+                    <input type="text" class="form-input" id="nomeMae" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group large">
+                    <label class="form-label">Nome do pai:</label>
+                    <input type="text" class="form-input" id="nomePai" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group medium">
+                    <label class="form-label">RG:</label>
+                    <input type="text" class="form-input" id="rg" placeholder="">
+                </div>
+                <div class="form-group small">
+                    <label class="form-label">Órgão expedidor:</label>
+                    <input type="text" class="form-input" id="orgaoExpedidor" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Data da expedição:</label>
+                    <input type="date" class="form-input" id="dataExpedicao" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group small">
+                    <label class="form-label">Sexo:</label>
+                    <input type="text" class="form-input" id="sexo" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Nascimento:</label>
+                    <input type="date" class="form-input" id="nascimento" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Estado Civil:</label>
+                    <input type="text" class="form-input" id="estadoCivil" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group medium">
+                    <label class="form-label">Nacionalidade:</label>
+                    <input type="text" class="form-input" id="nacionalidade" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Naturalidade:</label>
+                    <input type="text" class="form-input" id="naturalidade" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Domicília no Brasil:</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="domicilio" value="sim"> Sim
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="domicilio" value="nao"> Não
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group large">
+                    <label class="form-label">Endereço:</label>
+                    <input type="text" class="form-input" id="enderecoProprietario" placeholder="">
+                </div>
+                <div class="form-group small">
+                    <label class="form-label">Nº:</label>
+                    <input type="text" class="form-input" id="numeroProprietario" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Complemento:</label>
+                    <input type="text" class="form-input" id="complementoProprietario" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group medium">
+                    <label class="form-label">Bairro:</label>
+                    <input type="text" class="form-input" id="bairroProprietario" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Cidade:</label>
+                    <input type="text" class="form-input" id="cidadeProprietario" placeholder="">
+                </div>
+                <div class="form-group small">
+                    <label class="form-label">Estado:</label>
+                    <input type="text" class="form-input" id="estadoProprietario" placeholder="UF" maxlength="2">
+                </div>
+            </div>
+        </div>
+
+        <!-- CONFIGURAÇÃO DA LOCAÇÃO -->
+        <div class="section">
+            <div class="section-title">CONFIGURAÇÃO DA LOCAÇÃO</div>
+            
+            <div class="form-row">
+                <div class="form-group medium">
+                    <label class="form-label">Data de captação:</label>
+                    <input type="date" class="form-input" id="dataCaptacao" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Prazo máximo de locação (meses):</label>
+                    <input type="text" class="form-input" id="prazoLocacao" placeholder="">
+                </div>
+            </div>
+
+            <!-- CONDOMÍNIO -->
+            <div class="section-title" style="margin-top: 10px;">CONDOMÍNIO</div>
+
+            <div class="form-row">
+                <div class="form-group medium">
+                    <label class="form-label">Administradora:</label>
+                    <input type="text" class="form-input" id="administradora" placeholder="">
+                </div>
+                <div class="form-group medium">
+                    <label class="form-label">Edifício/Condomínio:</label>
+                    <input type="text" class="form-input" id="edificio" placeholder="">
+                </div>
+                <div class="form-group small">
+                    <label class="form-label">Valor:</label>
+                    <input type="text" class="form-input" id="valorCondominio" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group large">
+                    <label class="form-label">Administração do condomínio:</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="admCondominio" value="imobiliaria"> Será feita pela imobiliária
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="admCondominio" value="inquilino"> Será feita pelo inquilino
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONDIÇÕES GERAIS DO ANEXO I -->
+        <div class="section">
+            <div class="section-title">CONDIÇÕES GERAIS DO ANEXO I</div>
+            
+            <div class="conditions-box">
+                <p style="margin-bottom: 10px;">Na hipótese de haver mais de um proprietário deverá o corretor preencher novo <strong>ANEXO I</strong> e informar quantos % o mesmo terá direita da locação; Existe outro proprietário (_) Sim Qual % ________</p>
+                
+                <p>Informar o proprietário que cobramos administração sobre todas as taxas nas quais a imobiliária efetivamente administrar os pagamentos (IPTU, UXO, CONDOMÍNIO etc)</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Formatação automática de campos
+        document.getElementById('cpf')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+
+        document.getElementById('cpfTitular')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+
+        document.getElementById('cep')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 8) {
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+
+        document.getElementById('telefoneFixo')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 10) {
+                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+
+        document.getElementById('telefoneCelular')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+
+        // Função para gerar PDF
+        function gerarPDF() {
+            window.print();
+        }
+
+        // Função para compartilhar no WhatsApp
+        async function compartilharWhatsApp() {
+            const nomeProprietario = document.getElementById('nome').value || 'Proprietário';
+            const imovelEndereco = document.getElementById('endereco').value || 'imóvel';
+            
+            // Verificar se o navegador suporta Web Share API
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Anexo I - Proprietário',
+                        text: `Formulário de cadastro do proprietário ${nomeProprietario} para ${imovelEndereco}.\n\nPreencha e gere o PDF para enviar.`,
+                        url: window.location.href
+                    });
+                    console.log('Compartilhado com sucesso!');
+                } catch (err) {
+                    console.log('Erro ao compartilhar:', err);
+                    compartilharWhatsAppFallback();
+                }
+            } else {
+                // Fallback: abrir WhatsApp Web
+                compartilharWhatsAppFallback();
+            }
+        }
+
+        function compartilharWhatsAppFallback() {
+            const mensagem = encodeURIComponent(
+                '📋 *Formulário Anexo I - Proprietário*\n\n' +
+                'Por favor, preencha o formulário através do link:\n' +
+                window.location.href + '\n\n' +
+                'Após preencher, clique em "Gerar PDF" e envie o documento.'
+            );
+            
+            // Detectar se é mobile ou desktop
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const whatsappUrl = isMobile 
+                ? `whatsapp://send?text=${mensagem}`
+                : `https://web.whatsapp.com/send?text=${mensagem}`;
+            
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Função para limpar formulário
+        function limparFormulario() {
+            if (confirm('Tem certeza que deseja limpar todos os campos?')) {
+                const inputs = document.querySelectorAll('.form-input');
+                inputs.forEach(input => {
+                    input.value = '';
+                });
+
+                const radios = document.querySelectorAll('input[type="radio"]');
+                radios.forEach(radio => {
+                    radio.checked = false;
+                });
+
+                alert('✅ Formulário limpo!');
+            }
+        }
+    </script>
+</body>
+</html>
