@@ -35,6 +35,9 @@
             font-weight: bold;
             letter-spacing: 4px;
             margin-bottom: 10px;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
         }
 
         .action-buttons {
@@ -69,6 +72,9 @@
             margin-bottom: 8px;
             border-radius: 6px;
             page-break-inside: avoid;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
         }
 
         .section-title {
@@ -80,6 +86,9 @@
             margin-bottom: 6px;
             font-size: 13px;
             letter-spacing: 1px;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
         }
 
         .form-row {
@@ -664,68 +673,73 @@
         // Função para compartilhar PDF no WhatsApp
         async function compartilharWhatsApp() {
             try {
-                // Ocultar botões antes de gerar PDF
+                // Ocultar botões
                 const buttons = document.querySelector('.action-buttons');
+                const originalDisplay = buttons.style.display;
                 buttons.style.display = 'none';
 
                 const nomeLocatario = document.getElementById('nomeLocatario').value || 'Locatario';
                 const fileName = `Anexo_II_${nomeLocatario.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
 
-                // Clonar o container
-                const originalElement = document.querySelector('.container');
-                const clonedElement = originalElement.cloneNode(true);
+                // Substituir inputs por texto temporariamente
+                const inputs = document.querySelectorAll('.container input');
+                const originalInputs = [];
                 
-                // Substituir todos os inputs pelos valores como texto
-                const inputs = clonedElement.querySelectorAll('input');
                 inputs.forEach(input => {
                     const span = document.createElement('span');
                     span.textContent = input.value || '';
-                    span.style.cssText = window.getComputedStyle(input).cssText;
-                    span.style.border = 'none';
-                    span.style.borderBottom = '1px solid #666';
-                    span.style.backgroundColor = 'transparent';
-                    span.style.display = 'inline-block';
-                    span.style.minHeight = '16px';
+                    span.className = 'pdf-text-replacement';
+                    span.style.cssText = `
+                        font-size: 11px;
+                        color: #000;
+                        border-bottom: 1px solid #666;
+                        display: inline-block;
+                        min-width: 25px;
+                        padding: 2px 4px;
+                        flex: 0.8;
+                        max-width: 120px;
+                    `;
+                    originalInputs.push({ input, parent: input.parentNode, nextSibling: input.nextSibling });
                     input.parentNode.replaceChild(span, input);
                 });
-                
-                // Remover botões do clone
-                const clonedButtons = clonedElement.querySelector('.action-buttons');
-                if (clonedButtons) clonedButtons.remove();
-                
-                // Adicionar clone temporário ao DOM (necessário para html2canvas)
-                clonedElement.style.position = 'absolute';
-                clonedElement.style.left = '-9999px';
-                document.body.appendChild(clonedElement);
+
+                // Aguardar renderização
+                await new Promise(resolve => setTimeout(resolve, 100));
 
                 // Configuração do PDF
+                const element = document.querySelector('.container');
                 const opt = {
                     margin: 8,
                     filename: fileName,
-                    image: { type: 'jpeg', quality: 0.98 },
+                    image: { type: 'jpeg', quality: 0.95 },
                     html2canvas: { 
-                        scale: 2, 
+                        scale: 2,
                         useCORS: true,
-                        letterRendering: true,
                         allowTaint: true,
                         backgroundColor: '#ffffff',
-                        logging: false,
-                        scrollY: 0,
-                        scrollX: 0,
-                        windowWidth: clonedElement.scrollWidth,
-                        windowHeight: clonedElement.scrollHeight
+                        logging: true,
+                        width: element.offsetWidth,
+                        height: element.offsetHeight
                     },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
-                // Gerar PDF do clone
-                const pdfBlob = await html2pdf().set(opt).from(clonedElement).output('blob');
+                // Gerar PDF
+                const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
                 
-                // Remover clone do DOM
-                document.body.removeChild(clonedElement);
+                // Restaurar inputs
+                document.querySelectorAll('.pdf-text-replacement').forEach((span, index) => {
+                    const { input, parent, nextSibling } = originalInputs[index];
+                    if (nextSibling) {
+                        parent.insertBefore(input, nextSibling);
+                    } else {
+                        parent.appendChild(input);
+                    }
+                    span.remove();
+                });
                 
                 // Restaurar botões
-                buttons.style.display = 'flex';
+                buttons.style.display = originalDisplay;
 
                 // Criar arquivo para compartilhar
                 const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
@@ -751,7 +765,7 @@
                 console.error('Erro ao gerar PDF:', error);
                 // Restaurar botões em caso de erro
                 document.querySelector('.action-buttons').style.display = 'flex';
-                alert('❌ Erro ao gerar PDF. Tente usar o botão "Gerar PDF" para imprimir.');
+                alert('❌ Erro ao gerar PDF: ' + error.message);
             }
         }
 
