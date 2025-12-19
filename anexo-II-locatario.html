@@ -632,7 +632,7 @@
         </div>
 
         <!-- Rodapé com versão -->
-        <div class="version-footer">v1.1.0</div>
+        <div class="version-footer">v1.1.1</div>
 
     </div>
 
@@ -773,11 +773,19 @@
         // Função para compartilhar PDF no WhatsApp
         async function compartilharWhatsApp() {
             try {
+                const container = document.querySelector('.container');
+                const body = document.body;
                 const buttons = document.querySelector('.action-buttons');
                 const footer = document.querySelector('.version-footer');
                 
+                const originalBodyStyle = body.style.cssText;
+                const originalContainerStyle = container.style.cssText;
                 const originalButtonsDisplay = buttons.style.display;
                 const originalFooterDisplay = footer.style.display;
+                
+                // Forçar layout desktop para captura
+                body.style.cssText = 'margin: 0; padding: 10px; background-color: #f5f5f5; width: auto !important; min-width: 800px;';
+                container.style.cssText = 'max-width: 800px; margin: 0 auto; background-color: #2c5468; padding: 10px; border-radius: 8px;';
                 
                 // Ocultar botões e rodapé
                 buttons.style.display = 'none';
@@ -869,7 +877,9 @@
                     }
                 });
                 
-                // Restaurar visibilidade
+                // Restaurar estilos
+                body.style.cssText = originalBodyStyle;
+                container.style.cssText = originalContainerStyle;
                 buttons.style.display = originalButtonsDisplay;
                 footer.style.display = originalFooterDisplay;
 
