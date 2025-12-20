@@ -112,41 +112,9 @@ async function generatePdfFromClone(cloneElement, fileName, options = {}) {
         wrapper = document.createElement('div');
         wrapper.style.cssText = 'width:794px; max-width:794px; box-sizing:border-box; margin:0 !important; margin-left:0 !important; padding:0; background:' + bg + '; position:relative; left:0;';
         
-        const printable = cloneElement.cloneNode(true);
+        // Usar o elemento já modificado diretamente (não clonar novamente)
+        const printable = cloneElement;
         
-        // Substituir controles por spans no printable
-        try {
-            printable.querySelectorAll('input, textarea, select').forEach(control => {
-                if (control.tagName.toLowerCase() === 'input') {
-                    const type = (control.getAttribute('type') || '').toLowerCase();
-                    if (type === 'radio' || type === 'checkbox') {
-                        if (!control.checked) {
-                            control.remove();
-                            return;
-                        }
-                        const mark = document.createElement('span');
-                        mark.textContent = '✔';
-                        mark.style.cssText = 'font-size:11px; color:#000; padding:0 4px;';
-                        if (control.parentNode) {
-                            control.parentNode.replaceChild(mark, control);
-                        }
-                        return;
-                    }
-                }
-
-                const span = document.createElement('span');
-                const val = (control.value || '').toString().trim();
-                const placeholder = (control.getAttribute && control.getAttribute('placeholder')) || '';
-                span.textContent = (val === '' || val === placeholder) ? ' ' : val;
-                span.style.cssText = 'font-size:11px; color:#000; border-bottom:1px solid #666; display:block; min-width:25px; padding:2px 4px; white-space:pre;';
-                if (control.parentNode) {
-                    control.parentNode.replaceChild(span, control);
-                }
-            });
-        } catch (e) {
-            console.warn('Erro ao substituir controles:', e);
-        }
-
         printable.style.background = printable.style.background || 'transparent';
         printable.style.boxSizing = 'border-box';
         printable.style.width = '794px';

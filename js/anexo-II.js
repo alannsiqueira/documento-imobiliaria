@@ -21,50 +21,67 @@ document.addEventListener('DOMContentLoaded', function() {
 // Gerar PDF (impressão nativa)
 async function gerarPDF() {
     try {
-        const inputs = document.querySelectorAll('.container input');
-        const originalInputs = [];
+        const controls = document.querySelectorAll('.container input, .container select, .container textarea');
+        const originalControls = [];
         
-        inputs.forEach(input => {
-            if (input.type === 'radio' || input.type === 'checkbox') {
-                if (!input.checked) {
-                    input.style.display = 'none';
-                    originalInputs.push({ input, type: 'hide' });
+        controls.forEach(control => {
+            // Radio e checkbox: ocultar se não selecionado
+            if (control.type === 'radio' || control.type === 'checkbox') {
+                if (!control.checked) {
+                    control.style.display = 'none';
+                    originalControls.push({ control, type: 'hide' });
+                } else {
+                    // Substituir por checkmark
+                    const mark = document.createElement('span');
+                    mark.textContent = '✔';
+                    mark.className = 'pdf-text-replacement';
+                    mark.style.cssText = 'font-size: 11px; color: #000; padding: 0 4px;';
+                    originalControls.push({ control, parent: control.parentNode, nextSibling: control.nextSibling, type: 'replace' });
+                    control.parentNode.replaceChild(mark, control);
                 }
                 return;
             }
             
-            const span = document.createElement('span');
-            const textValue = input.value.trim();
-            const placeholderValue = input.getAttribute('placeholder') || '';
+            // Pegar valor do controle
+            let textValue = '';
+            if (control.tagName.toLowerCase() === 'select') {
+                const selected = control.options[control.selectedIndex];
+                textValue = selected ? selected.text.trim() : '';
+            } else {
+                textValue = (control.value || '').trim();
+            }
             
+            const placeholderValue = control.getAttribute('placeholder') || '';
+            
+            const span = document.createElement('span');
             span.textContent = (textValue === '' || textValue === placeholderValue) ? ' ' : textValue;
             span.className = 'pdf-text-replacement';
-            span.style.cssText = 'font-size: 11px; color: #000; border-bottom: 1px solid #666; display: block; min-width: 25px; padding: 2px 4px; flex: 1; white-space: pre;';
+            span.style.cssText = 'font-size: 11px; color: #000; border-bottom: 1px solid #666; display: inline-block; min-width: 25px; padding: 2px 4px; flex: 1; white-space: pre; vertical-align: bottom;';
             
-            originalInputs.push({ input, parent: input.parentNode, nextSibling: input.nextSibling, type: 'replace' });
-            input.parentNode.replaceChild(span, input);
+            originalControls.push({ control, parent: control.parentNode, nextSibling: control.nextSibling, type: 'replace' });
+            control.parentNode.replaceChild(span, control);
         });
 
         await new Promise(resolve => setTimeout(resolve, 100));
         window.print();
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        // Restaurar inputs
+        // Restaurar controles
         document.querySelectorAll('.pdf-text-replacement').forEach(span => {
-            const item = originalInputs.find(oi => oi.type === 'replace' && oi.parent === span.parentNode);
+            const item = originalControls.find(oi => oi.type === 'replace' && oi.parent === span.parentNode);
             if (item) {
                 if (item.nextSibling) {
-                    item.parent.insertBefore(item.input, item.nextSibling);
+                    item.parent.insertBefore(item.control, item.nextSibling);
                 } else {
-                    item.parent.appendChild(item.input);
+                    item.parent.appendChild(item.control);
                 }
                 span.remove();
             }
         });
         
-        originalInputs.forEach(item => {
+        originalControls.forEach(item => {
             if (item.type === 'hide') {
-                item.input.style.display = '';
+                item.control.style.display = '';
             }
         });
     } catch (error) {
@@ -223,19 +240,23 @@ async function compartilharMobile() {
 
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        try {
-            await printViaIframe(clone, fileName);
-            if (clone.parentNode) clone.parentNode.removeChild(clone);
-        } catch (err) {
-            console.warn('printViaIframe falhou, usando PDF:', err);
-            const pdfBlob = await generatePdfFromClone(clone, fileName, { mobileOverrides: true });
-            if (clone.parentNode) clone.parentNode.removeChild(clone);
-            
-            const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({ files: [file], title: 'Anexo II - Cadastro de Locatário', text: 'Formulário de cadastro do locatário.' });
-                } catch (e) {
+        // Gerar PDF e compartilhar
+        const pdfBlob = await generatePdfFromClone(clone, fileName, { mobileOverrides: true });
+        if (clone.parentNode) clone.parentNode.removeChild(clone);
+        
+        const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+        
+        // Tentar usar Web Share API
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({ 
+                    files: [file], 
+                    title: 'Anexo II - Cadastro de Locatário', 
+                    text: 'Formulário de cadastro do locatário.' 
+                });
+            } catch (e) {
+                if (e.name !== 'AbortError') {
+                    // Usuário cancelou ou erro - fazer download
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(pdfBlob);
                     link.download = fileName;
@@ -244,15 +265,16 @@ async function compartilharMobile() {
                     if (link.parentNode) link.parentNode.removeChild(link);
                     URL.revokeObjectURL(link.href);
                 }
-            } else {
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(pdfBlob);
-                link.download = fileName;
-                document.body.appendChild(link);
-                link.click();
-                if (link.parentNode) link.parentNode.removeChild(link);
-                URL.revokeObjectURL(link.href);
             }
+        } else {
+            // Navegador não suporta Web Share - fazer download
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(pdfBlob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            if (link.parentNode) link.parentNode.removeChild(link);
+            URL.revokeObjectURL(link.href);
         }
     } catch (error) {
         console.error('Erro ao compartilhar mobile:', error);

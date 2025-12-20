@@ -279,6 +279,24 @@
                 display: none !important;
             }
             
+            /* Ocultar controles nativos na impressão */
+            input:not([type="radio"]):not([type="checkbox"]),
+            select,
+            textarea {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                left: -9999px !important;
+            }
+            
+            /* Mostrar apenas os spans de substituição */
+            .pdf-text-replacement {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            
             .container {
                 box-shadow: none;
                 max-width: 100%;
@@ -635,9 +653,9 @@
     </div>
 
     <!-- Scripts modulares -->
-    <script src="js/common.js"></script>
-    <script src="js/print-helper.js"></script>
-    <script src="js/pdf-generator.js"></script>
-    <script src="js/anexo-I.js"></script>
+    <script src="js/common.js?v=1734711000"></script>
+    <script src="js/print-helper.js?v=1734711000"></script>
+    <script src="js/pdf-generator.js?v=1734711000"></script>
+    <script src="js/anexo-I.js?v=1734711000"></script>
 </body>
 </html>
