@@ -68,12 +68,12 @@ async function gerarPDF() {
             
             const span = document.createElement('span');
             const isEmpty = textValue === '' || textValue === placeholderValue;
-            span.textContent = isEmpty ? '\u00A0' : textValue;
+            span.textContent = isEmpty ? '' : textValue;
             span.className = 'pdf-text-replacement';
 
             const borderStyle = 'none';
             span.style.cssText = 'font-size: 11px; color: #000; border-bottom: ' + borderStyle + '; display: inline-block; min-width: 25px; padding: 0 4px 2px 4px; flex: 1; white-space: pre; line-height: 1.2; vertical-align: baseline;';
-            span.style.cssText = 'font-size: 11px; color: #000; display: inline-block; min-width: 25px; padding: 0 4px 2px 4px; flex: 1; white-space: pre; line-height: 1.2; vertical-align: baseline;';
+            span.style.cssText = 'font-size: 11px; color: #000; display: inline-block; min-width: 25px; padding: 0 4px 2px 4px; flex: 1; white-space: pre; line-height: 1.2; vertical-align: baseline; background: white;';
             
             originalControls.push({ control, parent: control.parentNode, nextSibling: control.nextSibling, type: 'replace' });
             control.parentNode.replaceChild(span, control);
@@ -165,8 +165,8 @@ async function compartilharDesktop() {
             const textValue = input.value.trim();
             const placeholderValue = input.getAttribute('placeholder') || '';
             
-            span.textContent = (textValue === '' || textValue === placeholderValue) ? ' ' : textValue;
-            span.style.cssText = 'font-size: 11px; color: #000; display: block; min-width: 25px; padding: 2px 4px; flex: 1; white-space: pre;';
+            span.textContent = (textValue === '' || textValue === placeholderValue) ? '' : textValue;
+            span.style.cssText = 'font-size: 11px; color: #000; display: block; min-width: 25px; padding: 2px 4px; flex: 1; white-space: pre; background: white;';
             input.parentNode.replaceChild(span, input);
         });
         
@@ -266,9 +266,7 @@ async function compartilharMobile() {
             
             // Criar span de substituição
             const span = document.createElement('span');
-            const isEmpty = textValue === '' || textValue === placeholderValue;
-            // Sem underline independente se está preenchido ou não
-            const borderStyle = 'none';
+                const borderStyle = 'none';
             span.style.cssText = 'font-size: 10px; color: #000; border-bottom: ' + borderStyle + '; display: inline-block; min-width: 20px; max-width: 100%; padding: 0 2px 2px 2px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-appearance: none; appearance: none; background: transparent; line-height: 1.2; vertical-align: baseline;';
             
             control.parentNode.replaceChild(span, control);
