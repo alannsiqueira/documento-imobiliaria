@@ -166,20 +166,38 @@ async function compartilharMobile() {
             section.style.pageBreakInside = 'avoid';
         });
         
-        const inputs = clone.querySelectorAll('input');
-        inputs.forEach(input => {
-            if (input.type === 'radio' || input.type === 'checkbox') {
-                if (!input.checked) input.remove();
+        // Substituir TODOS os controles (input, select, textarea) por spans
+        clone.querySelectorAll('input, select, textarea').forEach(control => {
+            // Radio e checkbox: remover se não selecionado
+            if (control.type === 'radio' || control.type === 'checkbox') {
+                if (!control.checked) {
+                    control.remove();
+                } else {
+                    const mark = document.createElement('span');
+                    mark.textContent = '✔';
+                    mark.style.cssText = 'font-size: 10px; color: #000; padding: 0 2px;';
+                    control.parentNode.replaceChild(mark, control);
+                }
                 return;
             }
             
-            const span = document.createElement('span');
-            const textValue = input.value.trim();
-            const placeholderValue = input.getAttribute('placeholder') || '';
+            // Pegar valor do controle
+            let textValue = '';
+            if (control.tagName.toLowerCase() === 'select') {
+                const selected = control.options[control.selectedIndex];
+                textValue = selected ? selected.text : '';
+            } else {
+                textValue = (control.value || '').trim();
+            }
             
+            const placeholderValue = control.getAttribute('placeholder') || '';
+            
+            // Criar span de substituição
+            const span = document.createElement('span');
             span.textContent = (textValue === '' || textValue === placeholderValue) ? ' ' : textValue;
-            span.style.cssText = 'font-size: 10px; color: #000; border-bottom: 1px solid #666; display: inline-block; min-width: 20px; max-width: 100%; padding: 1px 2px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
-            input.parentNode.replaceChild(span, input);
+            span.style.cssText = 'font-size: 10px; color: #000; border-bottom: 1px solid #666; display: inline-block; min-width: 20px; max-width: 100%; padding: 1px 2px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-appearance: none; appearance: none; background: transparent;';
+            
+            control.parentNode.replaceChild(span, control);
         });
         
         clone.querySelectorAll('.form-row').forEach(row => {
