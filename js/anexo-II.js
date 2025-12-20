@@ -25,11 +25,16 @@ async function gerarPDF() {
         const originalControls = [];
         
         controls.forEach(control => {
-            // Radio e checkbox: ocultar se não selecionado
+            // Radio e checkbox: mostrar com borda se não selecionado
             if (control.type === 'radio' || control.type === 'checkbox') {
                 if (!control.checked) {
-                    control.style.display = 'none';
-                    originalControls.push({ control, type: 'hide' });
+                    // Criar span vazio com borda para indicar campo não preenchido
+                    const empty = document.createElement('span');
+                    empty.textContent = '\u00A0';
+                    empty.className = 'pdf-text-replacement';
+                    empty.style.cssText = 'display: inline-block; width: 12px; height: 12px; border: 1px solid #666; border-radius: ' + (control.type === 'radio' ? '50%' : '2px') + '; margin: 0 2px;';
+                    originalControls.push({ control, parent: control.parentNode, nextSibling: control.nextSibling, type: 'replace' });
+                    control.parentNode.replaceChild(empty, control);
                 } else {
                     // Substituir por checkmark
                     const mark = document.createElement('span');
@@ -54,9 +59,12 @@ async function gerarPDF() {
             const placeholderValue = control.getAttribute('placeholder') || '';
             
             const span = document.createElement('span');
-            span.textContent = (textValue === '' || textValue === placeholderValue) ? ' ' : textValue;
+            const isEmpty = textValue === '' || textValue === placeholderValue;
+            span.textContent = isEmpty ? '\u00A0' : textValue;
             span.className = 'pdf-text-replacement';
-            span.style.cssText = 'font-size: 11px; color: #000; border-bottom: 1px solid #666; display: inline-block; min-width: 25px; padding: 2px 4px; flex: 1; white-space: pre; vertical-align: bottom;';
+            // Sem underline se estiver vazio
+            const borderStyle = isEmpty ? 'none' : '1px solid #666';
+            span.style.cssText = 'font-size: 11px; color: #000; border-bottom: ' + borderStyle + '; display: inline-block; min-width: 25px; padding: 0 4px 2px 4px; flex: 1; white-space: pre; line-height: 1.2; vertical-align: baseline;';
             
             originalControls.push({ control, parent: control.parentNode, nextSibling: control.nextSibling, type: 'replace' });
             control.parentNode.replaceChild(span, control);
@@ -186,10 +194,14 @@ async function compartilharMobile() {
         
         // Substituir TODOS os controles (input, select, textarea) por spans
         clone.querySelectorAll('input, select, textarea').forEach(control => {
-            // Radio e checkbox: remover se não selecionado
+            // Radio e checkbox: mostrar com borda se não selecionado
             if (control.type === 'radio' || control.type === 'checkbox') {
                 if (!control.checked) {
-                    control.remove();
+                    // Criar span vazio com borda
+                    const empty = document.createElement('span');
+                    empty.textContent = '\u00A0';
+                    empty.style.cssText = 'display: inline-block; width: 10px; height: 10px; border: 1px solid #666; border-radius: ' + (control.type === 'radio' ? '50%' : '2px') + '; margin: 0 2px;';
+                    control.parentNode.replaceChild(empty, control);
                 } else {
                     const mark = document.createElement('span');
                     mark.textContent = '✔';
@@ -212,8 +224,11 @@ async function compartilharMobile() {
             
             // Criar span de substituição
             const span = document.createElement('span');
-            span.textContent = (textValue === '' || textValue === placeholderValue) ? ' ' : textValue;
-            span.style.cssText = 'font-size: 10px; color: #000; border-bottom: 1px solid #666; display: inline-block; min-width: 20px; max-width: 100%; padding: 1px 2px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-appearance: none; appearance: none; background: transparent;';
+            const isEmpty = textValue === '' || textValue === placeholderValue;
+            span.textContent = isEmpty ? '\u00A0' : textValue;
+            // Sem underline se estiver vazio
+            const borderStyle = isEmpty ? 'none' : '1px solid #666';
+            span.style.cssText = 'font-size: 10px; color: #000; border-bottom: ' + borderStyle + '; display: inline-block; min-width: 20px; max-width: 100%; padding: 0 2px 2px 2px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-appearance: none; appearance: none; background: transparent; line-height: 1.2; vertical-align: baseline;';
             
             control.parentNode.replaceChild(span, control);
         });
