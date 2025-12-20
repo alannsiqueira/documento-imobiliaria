@@ -99,7 +99,62 @@ function limparFormulario() {
         radios.forEach(radio => {
             radio.checked = false;
         });
+        
+        // Limpar sessionStorage
+        const formId = document.body.dataset.formId || 'form';
+        sessionStorage.removeItem(formId + '_data');
 
         alert('✅ Formulário limpo!');
     }
 }
+
+// Salvar dados do formulário automaticamente
+function autoSaveForm() {
+    const formId = document.body.dataset.formId || 'form';
+    const inputs = document.querySelectorAll('input, select, textarea');
+    const data = {};
+    
+    inputs.forEach(input => {
+        if (input.id) {
+            if (input.type === 'radio' || input.type === 'checkbox') {
+                data[input.id] = input.checked;
+            } else {
+                data[input.id] = input.value;
+            }
+        }
+    });
+    
+    sessionStorage.setItem(formId + '_data', JSON.stringify(data));
+}
+
+// Carregar dados do formulário automaticamente
+function autoLoadForm() {
+    const formId = document.body.dataset.formId || 'form';
+    const savedData = sessionStorage.getItem(formId + '_data');
+    
+    if (savedData) {
+        try {
+            const data = JSON.parse(savedData);
+            Object.keys(data).forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    if (input.type === 'radio' || input.type === 'checkbox') {
+                        input.checked = data[id];
+                    } else {
+                        input.value = data[id];
+                    }
+                }
+            });
+        } catch (e) {
+            console.warn('Erro ao carregar dados salvos:', e);
+        }
+    }
+}
+
+// Configurar auto-save
+function setupAutoSave() {
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('input', autoSaveForm);
+        input.addEventListener('change', autoSaveForm);
+    });}

@@ -5,6 +5,15 @@
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
+    // Identificar formulário
+    document.body.dataset.formId = 'anexo-I';
+    
+    // Carregar dados salvos
+    autoLoadForm();
+    
+    // Configurar auto-save
+    setupAutoSave();
+    
     // Configurar visibilidade do botão compartilhar
     setupShareButtonVisibility();
     
@@ -61,8 +70,8 @@ async function gerarPDF() {
             const isEmpty = textValue === '' || textValue === placeholderValue;
             span.textContent = isEmpty ? '\u00A0' : textValue;
             span.className = 'pdf-text-replacement';
-            // Sem underline se estiver vazio
-            const borderStyle = isEmpty ? 'none' : '1px solid #666';
+            // Sem underline independente se está preenchido ou não
+            const borderStyle = 'none';
             span.style.cssText = 'font-size: 11px; color: #000; border-bottom: ' + borderStyle + '; display: inline-block; min-width: 25px; padding: 0 4px 2px 4px; flex: 1; white-space: pre; line-height: 1.2; vertical-align: baseline;';
             
             originalControls.push({ control, parent: control.parentNode, nextSibling: control.nextSibling, type: 'replace' });
@@ -127,7 +136,24 @@ async function compartilharDesktop() {
             section.style.marginBottom = '6px';
         });
         
-        const inputs = clone.querySelectorAll('input');
+        // Copiar valores dos controles originais para o clone
+        const originalInputs = container.querySelectorAll('input, select, textarea');
+        const clonedInputs = clone.querySelectorAll('input, select, textarea');
+        originalInputs.forEach((original, index) => {
+            const cloned = clonedInputs[index];
+            if (cloned) {
+                if (original.type === 'radio' || original.type === 'checkbox') {
+                    cloned.checked = original.checked;
+                } else if (original.tagName.toLowerCase() === 'select') {
+                    cloned.selectedIndex = original.selectedIndex;
+                } else {
+                    cloned.value = original.value;
+                }
+            }
+        });
+        
+        // Substituir controles por spans
+        const inputs = clone.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
             if (input.type === 'radio' || input.type === 'checkbox') {
                 if (!input.checked) input.remove();
@@ -139,7 +165,7 @@ async function compartilharDesktop() {
             const placeholderValue = input.getAttribute('placeholder') || '';
             
             span.textContent = (textValue === '' || textValue === placeholderValue) ? ' ' : textValue;
-            span.style.cssText = 'font-size: 11px; color: #000; border-bottom: 1px solid #666; display: block; min-width: 25px; padding: 2px 4px; flex: 1; white-space: pre;';
+            span.style.cssText = 'font-size: 11px; color: #000; display: block; min-width: 25px; padding: 2px 4px; flex: 1; white-space: pre;';
             input.parentNode.replaceChild(span, input);
         });
         
@@ -191,6 +217,22 @@ async function compartilharMobile() {
             section.style.pageBreakInside = 'avoid';
         });
         
+        // Copiar valores dos controles originais para o clone
+        const originalInputs = container.querySelectorAll('input, select, textarea');
+        const clonedInputs = clone.querySelectorAll('input, select, textarea');
+        originalInputs.forEach((original, index) => {
+            const cloned = clonedInputs[index];
+            if (cloned) {
+                if (original.type === 'radio' || original.type === 'checkbox') {
+                    cloned.checked = original.checked;
+                } else if (original.tagName.toLowerCase() === 'select') {
+                    cloned.selectedIndex = original.selectedIndex;
+                } else {
+                    cloned.value = original.value;
+                }
+            }
+        });
+        
         // Substituir TODOS os controles (input, select, textarea) por spans
         clone.querySelectorAll('input, select, textarea').forEach(control => {
             // Radio e checkbox: mostrar com borda se não selecionado
@@ -225,8 +267,8 @@ async function compartilharMobile() {
             const span = document.createElement('span');
             const isEmpty = textValue === '' || textValue === placeholderValue;
             span.textContent = isEmpty ? '\u00A0' : textValue;
-            // Sem underline se estiver vazio
-            const borderStyle = isEmpty ? 'none' : '1px solid #666';
+            // Sem underline independente se está preenchido ou não
+            const borderStyle = 'none';
             span.style.cssText = 'font-size: 10px; color: #000; border-bottom: ' + borderStyle + '; display: inline-block; min-width: 20px; max-width: 100%; padding: 0 2px 2px 2px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-appearance: none; appearance: none; background: transparent; line-height: 1.2; vertical-align: baseline;';
             
             control.parentNode.replaceChild(span, control);

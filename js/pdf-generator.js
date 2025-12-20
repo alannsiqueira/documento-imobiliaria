@@ -17,7 +17,9 @@ async function generatePdfFromClone(cloneElement, fileName, options = {}) {
         html2canvas: {
             scale: opts.scale,
             useCORS: true,
-            logging: false
+            logging: false,
+            dpi: 300, // DPI fixo para alta qualidade
+            letterRendering: true
         },
         jsPDF: {
             unit: 'mm',
@@ -72,7 +74,7 @@ async function generatePdfFromClone(cloneElement, fileName, options = {}) {
                 const textValue = input.value ? input.value.trim() : '';
                 const placeholderValue = input.getAttribute('placeholder') || '';
                 span.textContent = (textValue === '' || textValue === placeholderValue) ? ' ' : textValue;
-                span.style.cssText = 'font-size:11px; color:#000; border-bottom:1px solid #666; display:block; min-width:25px; padding:2px 4px; white-space:pre;';
+                span.style.cssText = 'font-size:11px; color:#000; display:block; min-width:25px; padding:2px 4px; white-space:pre;';
                 if (input.parentNode) {
                     input.parentNode.replaceChild(span, input);
                 }
@@ -149,11 +151,10 @@ async function generatePdfFromClone(cloneElement, fileName, options = {}) {
             const currentH = printableElem.scrollHeight || printableElem.offsetHeight || printableElem.getBoundingClientRect().height || 0;
             if (currentH > 0) {
                 const currentScale = pdfOptions.html2canvas.scale;
-                if (currentH * currentScale > a4HeightPx) {
-                    const newScale = Math.max(0.6, Math.min(currentScale, a4HeightPx / currentH));
-                    pdfOptions.html2canvas.scale = newScale;
-                    console.log('Escala ajustada para:', newScale);
-                }
+                // Para mobile, sempre ajustar para garantir 1 página
+                const targetScale = Math.max(0.4, Math.min(0.7, a4HeightPx / currentH));
+                pdfOptions.html2canvas.scale = targetScale;
+                console.log('Escala mobile ajustada para:', targetScale, '(altura:', currentH, ')');
             }
         }
     } catch (e) {

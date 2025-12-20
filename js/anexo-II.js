@@ -5,6 +5,15 @@
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
+    // Identificar formulário
+    document.body.dataset.formId = 'anexo-II';
+    
+    // Carregar dados salvos
+    autoLoadForm();
+    
+    // Configurar auto-save
+    setupAutoSave();
+    
     // Configurar visibilidade do botão compartilhar
     setupShareButtonVisibility();
     
@@ -128,7 +137,24 @@ async function compartilharDesktop() {
             section.style.marginBottom = '6px';
         });
         
-        const inputs = clone.querySelectorAll('input');
+        // Copiar valores dos controles originais para o clone
+        const originalInputs = container.querySelectorAll('input, select, textarea');
+        const clonedInputs = clone.querySelectorAll('input, select, textarea');
+        originalInputs.forEach((original, index) => {
+            const cloned = clonedInputs[index];
+            if (cloned) {
+                if (original.type === 'radio' || original.type === 'checkbox') {
+                    cloned.checked = original.checked;
+                } else if (original.tagName.toLowerCase() === 'select') {
+                    cloned.selectedIndex = original.selectedIndex;
+                } else {
+                    cloned.value = original.value;
+                }
+            }
+        });
+        
+        // Substituir controles por spans
+        const inputs = clone.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
             if (input.type === 'radio' || input.type === 'checkbox') {
                 if (!input.checked) input.remove();
@@ -190,6 +216,22 @@ async function compartilharMobile() {
             section.style.padding = '4px';
             section.style.marginBottom = '3px';
             section.style.pageBreakInside = 'avoid';
+        });
+        
+        // Copiar valores dos controles originais para o clone
+        const originalInputs = container.querySelectorAll('input, select, textarea');
+        const clonedInputs = clone.querySelectorAll('input, select, textarea');
+        originalInputs.forEach((original, index) => {
+            const cloned = clonedInputs[index];
+            if (cloned) {
+                if (original.type === 'radio' || original.type === 'checkbox') {
+                    cloned.checked = original.checked;
+                } else if (original.tagName.toLowerCase() === 'select') {
+                    cloned.selectedIndex = original.selectedIndex;
+                } else {
+                    cloned.value = original.value;
+                }
+            }
         });
         
         // Substituir TODOS os controles (input, select, textarea) por spans
