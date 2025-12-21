@@ -19,6 +19,7 @@
         }
 
         .container {
+            width: 794px;
             max-width: 100%;
             margin: 0 auto;
             background-color: #2c5468;
@@ -329,6 +330,7 @@
 
         <!-- Botões de Ação -->
         <div class="action-buttons">
+            <button class="btn" onclick="window.location.href='index.html'">⬅️ Voltar</button>
             <button class="btn" onclick="gerarPDF()">📄 Gerar PDF</button>
             <button class="btn" onclick="limparFormulario()">🗑️ Limpar Formulário</button>
         </div>
@@ -460,19 +462,19 @@
             </div>
 
             <div class="form-row">
-                <div class="form-group medium">
+                <div class="form-group medium" style="flex: none; width: 200px;">
                     <label class="form-label">Banco:</label>
                     <input type="text" class="form-input" id="banco" placeholder="">
                 </div>
-                <div class="form-group small">
+                <div class="form-group small" style="flex: none; width: 170px;">
                     <label class="form-label">Agência:</label>
                     <input type="text" class="form-input" id="agencia" placeholder="">
                 </div>
-                <div class="form-group medium">
+                <div class="form-group medium" style="flex: none; width: 200px;">
                     <label class="form-label">Conta:</label>
                     <input type="text" class="form-input" id="conta" placeholder="">
                 </div>
-                <div class="form-group small">
+                <div class="form-group small" style="flex: none; width: 170px;">
                     <label class="form-label">Operação:</label>
                     <input type="text" class="form-input" id="operacao" placeholder="">
                 </div>
