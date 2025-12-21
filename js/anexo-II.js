@@ -81,6 +81,9 @@ async function gerarPDF() {
         window.print();
         await new Promise(resolve => setTimeout(resolve, 1000));
 
+        // Limpar formulário após gerar PDF
+        limparFormulario();
+
         // Restaurar controles
         /*
         document.querySelectorAll('.pdf-text-replacement').forEach(span => {
