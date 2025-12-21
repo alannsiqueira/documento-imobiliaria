@@ -79,23 +79,21 @@ function isVercel() {
     return window.location.hostname.includes('vercel.app');
 }
 function limparFormulario() {
-    if (confirm('Tem certeza que deseja limpar todos os campos?')) {
-        const inputs = document.querySelectorAll('.form-input');
-        inputs.forEach(input => {
-            input.value = '';
-        });
+    const inputs = document.querySelectorAll('.form-input');
+    inputs.forEach(input => {
+        input.value = '';
+    });
 
-        const radios = document.querySelectorAll('input[type="radio"]');
-        radios.forEach(radio => {
-            radio.checked = false;
-        });
-        
-        // Limpar sessionStorage
-        const formId = document.body.dataset.formId || 'form';
-        sessionStorage.removeItem(formId + '_data');
+    const radios = document.querySelectorAll('input[type="radio"]');
+    radios.forEach(radio => {
+        radio.checked = false;
+    });
+    
+    // Limpar sessionStorage
+    const formId = document.body.dataset.formId || 'form';
+    sessionStorage.removeItem(formId + '_data');
 
-        alert('✅ Formulário limpo!');
-    }
+    alert('✅ Formulário limpo!');
 }
 
 // Salvar dados do formulário automaticamente
