@@ -317,6 +317,16 @@
                 /* sem border */
             }
 
+            @media (max-width: 768px) {
+                .form-row-mobile {
+                    flex-direction: column;
+                }
+                .form-row-mobile .form-group {
+                    width: 100% !important;
+                    flex: none !important;
+                }
+            }
+
             @page {
                 size: A4;
                 margin: 0mm;
@@ -461,7 +471,7 @@
                 </div>
             </div>
 
-            <div class="form-row">
+            <div class="form-row form-row-mobile">
                 <div class="form-group medium" style="flex: none; width: 200px;">
                     <label class="form-label">Banco:</label>
                     <input type="text" class="form-input" id="banco" placeholder="">
