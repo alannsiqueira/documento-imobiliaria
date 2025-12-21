@@ -78,16 +78,6 @@ function isMobile() {
 function isVercel() {
     return window.location.hostname.includes('vercel.app');
 }
-
-// Configurar visibilidade do botão Compartilhar
-function setupShareButtonVisibility() {
-    const btnCompartilhar = document.querySelector('.btn[onclick*="compartilhar"]');
-    if (btnCompartilhar && isVercel() && !isMobile()) {
-        btnCompartilhar.style.display = 'none';
-    }
-}
-
-// Limpar formulário
 function limparFormulario() {
     if (confirm('Tem certeza que deseja limpar todos os campos?')) {
         const inputs = document.querySelectorAll('.form-input');
@@ -124,17 +114,19 @@ function autoSaveForm() {
         }
     });
     
-    sessionStorage.setItem(formId + '_data', JSON.stringify(data));
+    localStorage.setItem(formId + '_data', JSON.stringify(data));
+    console.log('Auto saved data:', data);
 }
 
 // Carregar dados do formulário automaticamente
 function autoLoadForm() {
     const formId = document.body.dataset.formId || 'form';
-    const savedData = sessionStorage.getItem(formId + '_data');
+    const savedData = localStorage.getItem(formId + '_data');
     
     if (savedData) {
         try {
             const data = JSON.parse(savedData);
+            console.log('Loading data:', data);
             Object.keys(data).forEach(id => {
                 const input = document.getElementById(id);
                 if (input) {
@@ -142,12 +134,15 @@ function autoLoadForm() {
                         input.checked = data[id];
                     } else {
                         input.value = data[id];
+                        console.log('Set', id, 'to', data[id]);
                     }
                 }
             });
         } catch (e) {
             console.warn('Erro ao carregar dados salvos:', e);
         }
+    } else {
+        console.log('No saved data for', formId);
     }
 }
 

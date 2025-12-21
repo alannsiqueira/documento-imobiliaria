@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anexo I - Proprietário</title>
     <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -331,7 +330,6 @@
         <!-- Botões de Ação -->
         <div class="action-buttons">
             <button class="btn" onclick="gerarPDF()">📄 Gerar PDF</button>
-            <button class="btn" onclick="compartilharWhatsApp()">📱 Compartilhar</button>
             <button class="btn" onclick="limparFormulario()">🗑️ Limpar Formulário</button>
         </div>
 
@@ -375,7 +373,7 @@
                 </div>
                 <div class="form-group small">
                     <label class="form-label">Nº:</label>
-                    <input type="text" class="form-input" id="numero" placeholder="">
+                    <input type="text" class="form-input" id="numero" placeholder="" maxlength="10">
                 </div>
                 <div class="form-group medium">
                     <label class="form-label">Complemento:</label>
@@ -394,7 +392,36 @@
                 </div>
                 <div class="form-group small">
                     <label class="form-label">Estado:</label>
-                    <input type="text" class="form-input" id="estado" placeholder="UF" maxlength="2">
+                    <select class="form-input" id="estado">
+                        <option value="">UF</option>
+                        <option value="AC">AC</option>
+                        <option value="AL">AL</option>
+                        <option value="AP">AP</option>
+                        <option value="AM">AM</option>
+                        <option value="BA">BA</option>
+                        <option value="CE">CE</option>
+                        <option value="DF">DF</option>
+                        <option value="ES">ES</option>
+                        <option value="GO">GO</option>
+                        <option value="MA">MA</option>
+                        <option value="MT">MT</option>
+                        <option value="MS">MS</option>
+                        <option value="MG">MG</option>
+                        <option value="PA">PA</option>
+                        <option value="PB">PB</option>
+                        <option value="PR">PR</option>
+                        <option value="PE">PE</option>
+                        <option value="PI">PI</option>
+                        <option value="RJ">RJ</option>
+                        <option value="RN">RN</option>
+                        <option value="RS">RS</option>
+                        <option value="RO">RO</option>
+                        <option value="RR">RR</option>
+                        <option value="SC">SC</option>
+                        <option value="SP">SP</option>
+                        <option value="SE">SE</option>
+                        <option value="TO">TO</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -497,7 +524,7 @@
             <div class="form-row">
                 <div class="form-group medium">
                     <label class="form-label">RG:</label>
-                    <input type="text" class="form-input" id="rg" placeholder="">
+                    <input type="text" class="form-input" id="rg" placeholder="" maxlength="12">
                 </div>
                 <div class="form-group small">
                     <label class="form-label">Órgão expedidor:</label>
@@ -512,7 +539,11 @@
             <div class="form-row">
                 <div class="form-group small">
                     <label class="form-label">Sexo:</label>
-                    <input type="text" class="form-input" id="sexo" placeholder="">
+                    <select class="form-input" id="sexo">
+                        <option value="">Selecione</option>
+                        <option value="masculino">Masculino</option>
+                        <option value="feminino">Feminino</option>
+                    </select>
                 </div>
                 <div class="form-group medium">
                     <label class="form-label">Nascimento:</label>
@@ -520,7 +551,14 @@
                 </div>
                 <div class="form-group medium">
                     <label class="form-label">Estado Civil:</label>
-                    <input type="text" class="form-input" id="estadoCivil" placeholder="">
+                    <select class="form-input" id="estadoCivil">
+                        <option value="">Selecione</option>
+                        <option value="solteiro">Solteiro</option>
+                        <option value="casado">Casado</option>
+                        <option value="divorciado">Divorciado</option>
+                        <option value="viuvo">Viúvo</option>
+                        <option value="uniao_estavel">União Estável</option>
+                    </select>
                 </div>
             </div>
 
@@ -553,7 +591,7 @@
                 </div>
                 <div class="form-group small">
                     <label class="form-label">Nº:</label>
-                    <input type="text" class="form-input" id="numeroProprietario" placeholder="">
+                    <input type="text" class="form-input" id="numeroProprietario" placeholder="" maxlength="10">
                 </div>
                 <div class="form-group medium">
                     <label class="form-label">Complemento:</label>
@@ -572,7 +610,36 @@
                 </div>
                 <div class="form-group small">
                     <label class="form-label">Estado:</label>
-                    <input type="text" class="form-input" id="estadoProprietario" placeholder="UF" maxlength="2">
+                    <select class="form-input" id="estadoProprietario">
+                        <option value="">UF</option>
+                        <option value="AC">AC</option>
+                        <option value="AL">AL</option>
+                        <option value="AP">AP</option>
+                        <option value="AM">AM</option>
+                        <option value="BA">BA</option>
+                        <option value="CE">CE</option>
+                        <option value="DF">DF</option>
+                        <option value="ES">ES</option>
+                        <option value="GO">GO</option>
+                        <option value="MA">MA</option>
+                        <option value="MT">MT</option>
+                        <option value="MS">MS</option>
+                        <option value="MG">MG</option>
+                        <option value="PA">PA</option>
+                        <option value="PB">PB</option>
+                        <option value="PR">PR</option>
+                        <option value="PE">PE</option>
+                        <option value="PI">PI</option>
+                        <option value="RJ">RJ</option>
+                        <option value="RN">RN</option>
+                        <option value="RS">RS</option>
+                        <option value="RO">RO</option>
+                        <option value="RR">RR</option>
+                        <option value="SC">SC</option>
+                        <option value="SP">SP</option>
+                        <option value="SE">SE</option>
+                        <option value="TO">TO</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -649,14 +716,13 @@
         </div>
 
         <!-- Rodapé com versão -->
-        <div class="version-footer">v1.3.1</div>
+        <div class="version-footer">v1.3.2</div>
 
     </div>
 
     <!-- Scripts modulares -->
-    <script src="js/common.js?v=1734712000"></script>
-    <script src="js/print-helper.js?v=1734712000"></script>
-    <script src="js/pdf-generator.js?v=1734712000"></script>
-    <script src="js/anexo-I.js?v=1734712000"></script>
+    <script src="js/common.js?v=1766279796"></script>
+    <script src="js/print-helper.js?v=1766279796"></script>
+    <script src="js/anexo-I.js?v=1766279796"></script>
 </body>
 </html>

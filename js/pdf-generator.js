@@ -13,12 +13,12 @@ async function generatePdfFromClone(cloneElement, fileName, options = {}) {
     const pdfOptions = {
         margin: opts.margin,
         filename: fileName,
-        image: { type: 'jpeg', quality: 0.98 },
+        image: { type: 'png' },
         html2canvas: {
             scale: opts.scale,
             useCORS: true,
             logging: false,
-            dpi: 300, // DPI fixo para alta qualidade
+            dpi: 300, // DPI para alta qualidade
             letterRendering: true
         },
         jsPDF: {
@@ -142,24 +142,6 @@ async function generatePdfFromClone(cloneElement, fileName, options = {}) {
     }
 
     const elementToPrint = wrapper || cloneElement;
-
-    // Ajustar escala para caber em A4
-    try {
-        if (opts.mobileOverrides && wrapper) {
-            const printableElem = wrapper.querySelector(':scope > *') || wrapper.firstElementChild || cloneElement;
-            const a4HeightPx = 1122;
-            const currentH = printableElem.scrollHeight || printableElem.offsetHeight || printableElem.getBoundingClientRect().height || 0;
-            if (currentH > 0) {
-                const currentScale = pdfOptions.html2canvas.scale;
-                // Para mobile, sempre ajustar para garantir 1 página
-                const targetScale = Math.max(0.4, Math.min(0.7, a4HeightPx / currentH));
-                pdfOptions.html2canvas.scale = targetScale;
-                console.log('Escala mobile ajustada para:', targetScale, '(altura:', currentH, ')');
-            }
-        }
-    } catch (e) {
-        console.warn('Erro ao ajustar escala:', e);
-    }
 
     const blob = await html2pdf().set(pdfOptions).from(elementToPrint).output('blob');
 
