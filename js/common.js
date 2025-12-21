@@ -78,22 +78,174 @@ function isMobile() {
 function isVercel() {
     return window.location.hostname.includes('vercel.app');
 }
-function limparFormulario() {
-    const inputs = document.querySelectorAll('.form-input');
-    inputs.forEach(input => {
-        input.value = '';
-    });
+// Detectar se é localhost (IPv4/IPv6)
+function isLocalhost() {
+    const h = window.location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || h === '::1';
+}
 
-    const radios = document.querySelectorAll('input[type="radio"]');
-    radios.forEach(radio => {
-        radio.checked = false;
-    });
-    
-    // Limpar sessionStorage
+// Preencher dados de exemplo apenas em localhost e apenas se não houver dados salvos
+function fillSampleDataIfLocalhost() {
+    if (!isLocalhost()) return;
     const formId = document.body.dataset.formId || 'form';
-    sessionStorage.removeItem(formId + '_data');
+    try {
+        if (localStorage.getItem(formId + '_data')) return; // não sobrepor dados salvos
+    } catch (e) {}
 
-    alert('✅ Formulário limpo!');
+    const samples = {
+        'anexo-I': {
+            valorAluguel: '2.500,00',
+            taxaAdm: '8',
+            taxaLocacao: '8',
+            tipoImovel: 'Apartamento',
+            cep: '01000-000',
+            endereco: 'Rua Exemplo, 100',
+            numero: '100',
+            complemento: 'Apto 101',
+            bairro: 'Centro',
+            cidade: 'Cidade Ex',
+            estado: 'SP',
+
+            nome: 'Fulano de Tal',
+            cpf: '123.456.789-09',
+            chavePix: 'fulano@pix',
+            banco: 'Banco Exemplo',
+            agencia: '1234',
+            conta: '567890',
+            operacao: '01',
+            titular: 'Fulano de Tal',
+            cpfTitular: '123.456.789-09',
+            email: 'fulano@example.com',
+            telefoneFixo: '(11) 3333-4444',
+            telefoneCelular: '(11) 98888-7777',
+
+            nomeMae: 'Maria de Tal',
+            nomePai: 'Joao de Tal',
+            rg: '12.345.678-9',
+            orgaoExpedidor: 'SSP',
+            dataExpedicao: '2005-08-15',
+            sexo: 'masculino',
+            nascimento: '1985-05-20',
+            estadoCivil: 'solteiro',
+            nacionalidade: 'Brasileiro',
+            naturalidade: 'Cidade Ex',
+
+            enderecoProprietario: 'Rua Exemplo, 100',
+            numeroProprietario: '100',
+            complementoProprietario: 'Apto 101',
+            bairroProprietario: 'Centro',
+            cidadeProprietario: 'Cidade Ex',
+            estadoProprietario: 'SP',
+
+            dataCaptacao: '2025-01-01',
+            prazoLocacao: '12',
+            administradora: 'Admin Exemplos',
+            edificio: 'Edifício Ex',
+            valorCondominio: '300,00',
+            percentualOutroProprietario: '0%'
+        },
+        'anexo-II': {
+            nomeLocatario: 'Beltrano Silva',
+            cpfLocatario: '987.654.321-00',
+            emailLocatario: 'beltrano@example.com',
+            telefoneFixoLocatario: '(11) 2222-3333',
+            telefoneCelularLocatario: '(11) 97777-6666',
+            nomeMaeLocatario: 'Mae Exemplo',
+            nomePaiLocatario: 'Pai Exemplo',
+            rgLocatario: '12.345.678-9',
+            orgaoExpedidorLocatario: 'SSP',
+            dataExpedicaoLocatario: '2006-06-10',
+            sexoLocatario: 'masculino',
+            nascimentoLocatario: '1990-02-14',
+            estadoCivilLocatario: 'casado',
+            nacionalidadeLocatario: 'Brasileiro',
+            naturalidadeLocatario: 'Cidade Ex',
+            enderecoLocatario: 'Av. Teste, 200',
+            bairroLocatario: 'Bairro Teste',
+            estadoLocatario: 'SP',
+
+            nomeConjuge: 'Conjuge Silva',
+            cpfConjuge: '111.222.333-44',
+            emailConjuge: 'conjuge@example.com',
+            telefoneFixoConjuge: '(11) 4444-5555',
+            telefoneCelularConjuge: '(11) 96666-5555',
+            nomeMaeConjuge: 'Mae Conjuge',
+            nomePaiConjuge: 'Pai Conjuge',
+            rgConjuge: '98.765.432-1',
+            orgaoExpedidorConjuge: 'SSP',
+            dataExpedicaoConjuge: '2008-09-01',
+            sexoConjuge: 'feminino',
+            nascimentoConjuge: '1992-07-07',
+            estadoCivilConjuge: 'casado',
+            nacionalidadeConjuge: 'Brasileira',
+            naturalidadeConjuge: 'Cidade Ex',
+
+            nomeEmpresa: 'Empresa Exemplo',
+            cnpjEmpresa: '12.345.678/0001-99',
+            profissao: 'Analista',
+            ramoAtividade: 'Serviços',
+            rendaMensal: 'R$ 5.000,00',
+            telefoneEmpresa: '(11) 95555-4444',
+            enderecoEmpresa: 'Rua Empresa, 50',
+
+            nomeEmpresaConjuge: 'Empresa Conjuge',
+            cnpjEmpresaConjuge: '98.765.432/0001-11',
+            profissaoConjuge: 'Gerente',
+            ramoAtividadeConjuge: 'Comércio',
+            rendaMensalConjuge: 'R$ 4.000,00',
+            telefoneEmpresaConjuge: '(11) 93333-2222',
+            enderecoEmpresaConjuge: 'Av. Conjuge, 10'
+        }
+    };
+
+    const map = samples[formId];
+    if (!map) return;
+
+    Object.keys(map).forEach(id => {
+        try {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const val = map[id];
+            const tag = el.tagName && el.tagName.toLowerCase();
+            if (tag === 'select') {
+                // tentar selecionar por value
+                try { el.value = val; } catch (e) { el.selectedIndex = -1; }
+            } else if (el.type === 'checkbox' || el.type === 'radio') {
+                el.checked = !!val;
+            } else {
+                el.value = val;
+            }
+        } catch (e) {}
+    });
+}
+function limparFormulario() {
+    const elements = document.querySelectorAll('input, select, textarea');
+    elements.forEach(el => {
+        const tag = el.tagName.toLowerCase();
+        if (tag === 'select') {
+            try { el.selectedIndex = -1; } catch (e) { el.value = ''; }
+        } else if (el.type === 'checkbox' || el.type === 'radio') {
+            el.checked = false;
+        } else {
+            el.value = '';
+        }
+    });
+
+    // Disparar eventos para atualizar listeners (auto-save ou outros)
+    elements.forEach(el => {
+        try {
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+        } catch (e) {}
+    });
+
+    // Remover spans criados para PDF caso ainda existam
+    try { document.querySelectorAll('.pdf-text-replacement').forEach(n => n.remove()); } catch (e) {}
+
+    // Limpar armazenamento salvo (localStorage é usado pelo autoSave)
+    const formId = document.body.dataset.formId || 'form';
+    try { localStorage.removeItem(formId + '_data'); } catch (e) {}
+    try { sessionStorage.removeItem(formId + '_data'); } catch (e) {}
 }
 
 // Salvar dados do formulário automaticamente

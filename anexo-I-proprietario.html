@@ -258,6 +258,14 @@
             }
         }
 
+        /* Desktop widths for specific mobile-form rows (apply only on larger screens) */
+        @media (min-width: 769px) {
+            .form-row.form-row-mobile .form-group:nth-child(1) { flex: none; width: 200px; }
+            .form-row.form-row-mobile .form-group:nth-child(2) { flex: none; width: 170px; }
+            .form-row.form-row-mobile .form-group:nth-child(3) { flex: none; width: 200px; }
+            .form-row.form-row-mobile .form-group:nth-child(4) { flex: none; width: 170px; }
+        }
+
         /* Estilos para impressão/PDF */
         @media print {
             * {
@@ -458,33 +466,33 @@
                     <label class="form-label">Forma de pagamento:</label>
                     <div class="radio-group">
                         <label class="radio-option">
-                            <input type="radio" name="formaPagamento" value="transferencia"> Transferência
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="formaPagamento" value="pix"> Pix
-                        </label>
+                                <input type="radio" name="formaPagamento" value="transferencia"> Transferência
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="formaPagamento" value="pix"> Pix
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group medium">
+                        <label class="form-label">Chave PIX:</label>
+                        <input type="text" class="form-input" id="chavePix" placeholder="">
                     </div>
                 </div>
-                <div class="form-group medium">
-                    <label class="form-label">Chave PIX:</label>
-                    <input type="text" class="form-input" id="chavePix" placeholder="">
-                </div>
-            </div>
 
-            <div class="form-row form-row-mobile">
-                <div class="form-group medium" style="flex: none; width: 200px;">
-                    <label class="form-label">Banco:</label>
-                    <input type="text" class="form-input" id="banco" placeholder="">
-                </div>
-                <div class="form-group small" style="flex: none; width: 170px;">
-                    <label class="form-label">Agência:</label>
-                    <input type="text" class="form-input" id="agencia" placeholder="">
-                </div>
-                <div class="form-group medium" style="flex: none; width: 200px;">
-                    <label class="form-label">Conta:</label>
+                <div class="form-row form-row-mobile">
+                    <div class="form-group medium">
+                        <label class="form-label">Banco:</label>
+                        <input type="text" class="form-input" id="banco" placeholder="">
+                    </div>
+                    <div class="form-group small">
+                        <label class="form-label">Agência:</label>
+                        <input type="text" class="form-input" id="agencia" placeholder="">
+                    </div>
+                    <div class="form-group medium">
+                        <label class="form-label">Conta:</label>
                     <input type="text" class="form-input" id="conta" placeholder="">
                 </div>
-                <div class="form-group small" style="flex: none; width: 170px;">
+                <div class="form-group small">
                     <label class="form-label">Operação:</label>
                     <input type="text" class="form-input" id="operacao" placeholder="">
                 </div>
@@ -728,13 +736,13 @@
         </div>
 
         <!-- Rodapé com versão -->
-        <div class="version-footer">v1.3.3</div>
+        <div class="version-footer">v1.3.4</div>
 
     </div>
 
     <!-- Scripts modulares -->
-    <script src="js/common.js?v=1766281732"></script>
-    <script src="js/print-helper.js?v=1766281732"></script>
-    <script src="js/anexo-I.js?v=1766281732"></script>
+    <script src="js/common.js?v=1766281733"></script>
+    <script src="js/print-helper.js?v=1766281733"></script>
+    <script src="js/anexo-I.js?v=1766281733"></script>
 </body>
 </html>

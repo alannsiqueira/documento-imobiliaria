@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Carregar dados salvos
     autoLoadForm();
+    // Preencher dados de exemplo em localhost se não houver dados salvos
+    try { fillSampleDataIfLocalhost(); } catch (e) {}
     
     // Configurar auto-save
     setupAutoSave();
@@ -81,29 +83,38 @@ async function gerarPDF() {
         window.print();
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Limpar formulário após gerar PDF
-        limparFormulario();
+        // Restaurar controles substituídos pelo HTML de impressão
+        try {
+            originalControls.forEach(item => {
+                try {
+                    if (item.control) {
+                        try {
+                            const tag = item.control.tagName && item.control.tagName.toLowerCase();
+                            if (tag === 'select') {
+                                try { item.control.selectedIndex = -1; } catch (e) { item.control.value = ''; }
+                            } else if (item.control.type === 'checkbox' || item.control.type === 'radio') {
+                                item.control.checked = false;
+                            } else if (typeof item.control.value !== 'undefined') {
+                                item.control.value = '';
+                            }
+                        } catch (e) {}
+                    }
+                    if (item.parent) {
+                        if (item.nextSibling && item.nextSibling.parentNode === item.parent) {
+                            item.parent.insertBefore(item.control, item.nextSibling);
+                        } else {
+                            item.parent.appendChild(item.control);
+                        }
+                    }
+                } catch (e) {}
+            });
+            try { document.querySelectorAll('.pdf-text-replacement').forEach(n => n.remove()); } catch (e) {}
+        } catch (e) {
+            console.warn('Erro ao restaurar controles:', e);
+        }
 
-        // Restaurar controles
-        /*
-        document.querySelectorAll('.pdf-text-replacement').forEach(span => {
-            const item = originalControls.find(oi => oi.type === 'replace' && oi.parent === span.parentNode);
-            if (item) {
-                if (item.nextSibling) {
-                    item.parent.insertBefore(item.control, item.nextSibling);
-                } else {
-                    item.parent.appendChild(item.control);
-                }
-                span.remove();
-            }
-        });
-        
-        originalControls.forEach(item => {
-            if (item.type === 'hide') {
-                item.control.style.display = '';
-            }
-        });
-        */
+        // Limpar formulário após gerar PDF (após restaurar os controles)
+        try { limparFormulario(); } catch (e) {}
     } catch (error) {
         console.error('Erro ao gerar PDF:', error);
         alert('❌ Erro ao gerar PDF. Tente novamente.');
